@@ -23,12 +23,12 @@ func (s *Server) MaxEmv(ctx context.Context, in *pb.MaxEmvRequest) (*pb.MaxEmvRe
 		Seconds: now.Unix(),
 		Nanos:   int32(now.Nanosecond()),
 	}}
-	reportRepository(&result, false)
+	Repo.Put(&result)
 	return &pb.MaxEmvResponse{Result: &result}, nil
 }
 
 func (s *Server) ReportMaxEmvResults(ctx context.Context, in *pb.ReportRequest) (*pb.ReportResponse, error) {
-	report := reportRepository(nil, true)
+	report := Repo.Fetch()
 
 	return &pb.ReportResponse{Report: report}, nil
 }

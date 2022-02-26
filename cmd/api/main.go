@@ -16,6 +16,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	service.Repo = service.NewSqlite3ReportRepository(nil)
 	server := grpc.NewServer()
 	pb.RegisterGDeanServiceServer(server, &service.Server{})
 
