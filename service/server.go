@@ -52,23 +52,6 @@ func calcMaxEmv(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 
 }
 
-// report infra
-var reportRepository = reporter()
-
-func reporter() func(*pb.Result, bool) *pb.Report {
-	report := NewReport()
-
-	return func(res *pb.Result, isFetch bool) *pb.Report {
-		if isFetch {
-			return report
-		}
-		report.NumberOfCalc += 1
-		report.Result = append(report.Result, res)
-		return report
-	}
-
-}
-
 // helper
 func NewReport() *pb.Report {
 	return &pb.Report{
