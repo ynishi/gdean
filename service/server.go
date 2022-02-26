@@ -15,6 +15,19 @@ type Server struct {
 	pb.GDeanServiceServer
 }
 
+type ServerWithRepo struct {
+	Server *Server
+	Repo   ReportRepository
+}
+
+func DefaultServer() *Server {
+	return &Server{}
+}
+
+func DefaultServerWithRepo(ctx context.Context, server *Server, report ReportRepository) *ServerWithRepo {
+	return &ServerWithRepo{Server: server, Repo: report}
+}
+
 func (s *Server) MaxEmv(ctx context.Context, in *pb.MaxEmvRequest) (*pb.MaxEmvResponse, error) {
 	log.Printf("Recieved: %v", in.GetTowPData().GetP1())
 	maxEmv, _ := calcMaxEmv(in.GetTowPData().GetP1(), in.GetTowPData().GetDataP1(), in.GetTowPData().GetDataP2())

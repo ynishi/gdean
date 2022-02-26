@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	pb "github.com/ynishi/gdean/pb"
 	"github.com/ynishi/gdean/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"time"
 )
 
 func main() {
@@ -16,9 +18,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	service.Repo = service.NewSqlite3ReportRepository(nil)
+	//	service.Repo = service.NewSqlite3ReportRepository(nil)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	svs := service.InitializeServerWithRepo(ctx)
+	service.Repo = svs.Repo
 	server := grpc.NewServer()
-	pb.RegisterGDeanServiceServer(server, &service.Server{})
+	pb.RegisterGDeanServiceServer(server, svs.Server)
 
 	server.Serve(listenPort)
 }

@@ -18,33 +18,33 @@ type ReportModel struct {
 
 // report infra
 
-type reportRepository interface {
+type ReportRepository interface {
 	Fetch() *pb.Report
 	Put(*pb.Result)
 }
 
-var Repo reportRepository
+var Repo ReportRepository
 
 type Sqlite3ReportRepository struct {
-	filename string
+	filename Sqlite3ConnInfo
 }
 
-func NewSqlite3ReportRepository(filename *string) *Sqlite3ReportRepository {
-	var f string
-	if filename == nil {
-		f = "report.db"
-	} else {
-		f = *filename
-	}
+type Sqlite3ConnInfo string
 
-	r := Sqlite3ReportRepository{filename: f}
+func DefaultSqlite3ConnInfo() *Sqlite3ConnInfo {
+	var v Sqlite3ConnInfo = "report.db"
+	return &v
+}
+
+func NewSqlite3ReportRepository(filename *Sqlite3ConnInfo) *Sqlite3ReportRepository {
+	r := Sqlite3ReportRepository{filename: *filename}
 	db := r.getDB()
 	db.AutoMigrate(&ReportModel{})
 	return &r
 }
 
 func (r *Sqlite3ReportRepository) getDB() *gorm.DB {
-	db, _ := gorm.Open(sqlite.Open(r.filename), &gorm.Config{})
+	db, _ := gorm.Open(sqlite.Open(string(r.filename)), &gorm.Config{})
 	return db
 }
 
