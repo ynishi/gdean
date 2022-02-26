@@ -1,14 +1,18 @@
+//go:build wireinject
+// +build wireinject
+
 package main
 
 import (
 	"context"
 	"fmt"
-	pb "github.com/ynishi/gdean/pb"
-	"github.com/ynishi/gdean/service"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 	"time"
+
+	pb "github.com/ynishi/gdean/pb"
+	s "github.com/ynishi/gdean/service"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -19,8 +23,8 @@ func main() {
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
-	svs := service.InitializeServerWithRepo(ctx)
-	service.Repo = svs.Repo
+	svs := initializeServerWithRepo(ctx)
+	s.Repo = svs.Repo
 	server := grpc.NewServer()
 	pb.RegisterGDeanServiceServer(server, svs.Server)
 
