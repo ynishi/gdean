@@ -15,9 +15,8 @@ type MaxEmvInput struct {
 
 func calcMaxEmv(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 	mei := MaxEmvInput{P1: p1, DS1: dataP1, DS2: dataP2}
-	d, _ := json.Marshal(mei)
 	var meo map[string]int32
-	ret := runPython("max_emv", string(d))
+	ret := runPython("max_emv", mei)
 	if err := json.Unmarshal([]byte(ret), &meo); err != nil {
 		fmt.Println(err)
 		return -1, err
@@ -43,12 +42,16 @@ func calcMaxEmvGo(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 
 }
 
-func runPython(name string, payload string) string {
-	// expect valid python environment exists
-	out1, _ := exec.Command("ls", "calc/calc.py").Output()
-	fmt.Println(string(out1))
+type PyPayload struct {
+	Name string      `json:"name"`
+	Data interface{} `json:"data"`
+}
 
-	out, err := exec.Command("python", "calc/calc.py", "{\"name\":\""+name+"\",\"data\":"+payload+"}").Output()
+func runPython(name string, data interface{}) string {
+	// expect valid python environment exists
+	payload, _ := json.Marshal(PyPayload{Name: name, Data: data})
+	fmt.Println(string(payload))
+	out, err := exec.Command("python", "calc/calc.py", string(payload)).Output()
 	if err != nil {
 		fmt.Println(err)
 		return "{}"

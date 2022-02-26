@@ -18,7 +18,6 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//	service.Repo = service.NewSqlite3ReportRepository(nil)
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	svs := service.InitializeServerWithRepo(ctx)
 	service.Repo = svs.Repo
