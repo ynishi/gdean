@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/thoas/go-funk"
 	pb "github.com/ynishi/gdean/pb"
 )
 
@@ -44,25 +43,6 @@ func (s *Server) ReportMaxEmvResults(ctx context.Context, in *pb.ReportRequest) 
 	report := Repo.Fetch()
 
 	return &pb.ReportResponse{Report: report}, nil
-}
-
-// max emv logic
-func calcMaxEmv(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
-	p2 := 1 - p1
-	l := len(dataP1)
-	dataP12 := make([]float32, l)
-	dataP22 := make([]float32, l)
-	sums := make([]float32, l)
-	for i := 0; i < l; i++ {
-		dataP12[i] = float32(dataP1[i]) * p1
-		dataP22[i] = float32(dataP2[i]) * p2
-		sums[i] = dataP12[i] + dataP22[i]
-	}
-	maxSum := funk.MaxFloat32(sums)
-	maxSumI := funk.IndexOf(sums, maxSum)
-
-	return int32(maxSumI), nil
-
 }
 
 // helper
