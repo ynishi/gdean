@@ -13,7 +13,7 @@ def max_emv(p1, ds1, ds2):
 
 
 if __name__ == "__main__":
-    ret = "{}"
+    ret = ""
     if len(sys.argv) == 1:
         print(ret)
         sys.exit()
