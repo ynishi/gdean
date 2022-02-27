@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -10,7 +11,6 @@ func TestRunPython(t *testing.T) {
 	want := ""
 	var ret string
 	err := runPython(name, data, &ret)
-	if ret != want || err != nil {
-		t.Fatalf(`Ng in %s, err %s, want %s`, ret, err, want)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, ret, want, "returned value should be equal")
 }
