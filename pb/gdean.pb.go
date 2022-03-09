@@ -2,11 +2,12 @@
 // versions:
 // 	protoc-gen-go v1.25.0-devel
 // 	protoc        v3.14.0
-// source: pb/gdean.proto
+// source: gdean.proto
 
 package gdean
 
 import (
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -33,7 +34,7 @@ type Result struct {
 func (x *Result) Reset() {
 	*x = Result{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[0]
+		mi := &file_gdean_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -46,7 +47,7 @@ func (x *Result) String() string {
 func (*Result) ProtoMessage() {}
 
 func (x *Result) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[0]
+	mi := &file_gdean_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +60,7 @@ func (x *Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Result.ProtoReflect.Descriptor instead.
 func (*Result) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{0}
+	return file_gdean_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Result) GetMaxEmv() int32 {
@@ -88,7 +89,7 @@ type Report struct {
 func (x *Report) Reset() {
 	*x = Report{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[1]
+		mi := &file_gdean_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -101,7 +102,7 @@ func (x *Report) String() string {
 func (*Report) ProtoMessage() {}
 
 func (x *Report) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[1]
+	mi := &file_gdean_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,7 +115,7 @@ func (x *Report) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Report.ProtoReflect.Descriptor instead.
 func (*Report) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{1}
+	return file_gdean_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Report) GetNumberOfCalc() int32 {
@@ -144,7 +145,7 @@ type TowPData struct {
 func (x *TowPData) Reset() {
 	*x = TowPData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[2]
+		mi := &file_gdean_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -157,7 +158,7 @@ func (x *TowPData) String() string {
 func (*TowPData) ProtoMessage() {}
 
 func (x *TowPData) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[2]
+	mi := &file_gdean_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +171,7 @@ func (x *TowPData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TowPData.ProtoReflect.Descriptor instead.
 func (*TowPData) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{2}
+	return file_gdean_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TowPData) GetP1() float32 {
@@ -205,7 +206,7 @@ type MaxEmvRequest struct {
 func (x *MaxEmvRequest) Reset() {
 	*x = MaxEmvRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[3]
+		mi := &file_gdean_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -218,7 +219,7 @@ func (x *MaxEmvRequest) String() string {
 func (*MaxEmvRequest) ProtoMessage() {}
 
 func (x *MaxEmvRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[3]
+	mi := &file_gdean_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -231,7 +232,7 @@ func (x *MaxEmvRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaxEmvRequest.ProtoReflect.Descriptor instead.
 func (*MaxEmvRequest) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{3}
+	return file_gdean_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MaxEmvRequest) GetTowPData() *TowPData {
@@ -252,7 +253,7 @@ type MaxEmvResponse struct {
 func (x *MaxEmvResponse) Reset() {
 	*x = MaxEmvResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[4]
+		mi := &file_gdean_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -265,7 +266,7 @@ func (x *MaxEmvResponse) String() string {
 func (*MaxEmvResponse) ProtoMessage() {}
 
 func (x *MaxEmvResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[4]
+	mi := &file_gdean_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -278,7 +279,7 @@ func (x *MaxEmvResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaxEmvResponse.ProtoReflect.Descriptor instead.
 func (*MaxEmvResponse) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{4}
+	return file_gdean_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MaxEmvResponse) GetResult() *Result {
@@ -297,7 +298,7 @@ type ReportRequest struct {
 func (x *ReportRequest) Reset() {
 	*x = ReportRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[5]
+		mi := &file_gdean_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -310,7 +311,7 @@ func (x *ReportRequest) String() string {
 func (*ReportRequest) ProtoMessage() {}
 
 func (x *ReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[5]
+	mi := &file_gdean_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +324,7 @@ func (x *ReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportRequest.ProtoReflect.Descriptor instead.
 func (*ReportRequest) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{5}
+	return file_gdean_proto_rawDescGZIP(), []int{5}
 }
 
 type ReportResponse struct {
@@ -337,7 +338,7 @@ type ReportResponse struct {
 func (x *ReportResponse) Reset() {
 	*x = ReportResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_gdean_proto_msgTypes[6]
+		mi := &file_gdean_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -350,7 +351,7 @@ func (x *ReportResponse) String() string {
 func (*ReportResponse) ProtoMessage() {}
 
 func (x *ReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_gdean_proto_msgTypes[6]
+	mi := &file_gdean_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +364,7 @@ func (x *ReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportResponse.ProtoReflect.Descriptor instead.
 func (*ReportResponse) Descriptor() ([]byte, []int) {
-	return file_pb_gdean_proto_rawDescGZIP(), []int{6}
+	return file_gdean_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ReportResponse) GetReport() *Report {
@@ -373,68 +374,1002 @@ func (x *ReportResponse) GetReport() *Report {
 	return nil
 }
 
-var File_pb_gdean_proto protoreflect.FileDescriptor
+type MetaBody struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
 
-var file_pb_gdean_proto_rawDesc = []byte{
-	0x0a, 0x0e, 0x70, 0x62, 0x2f, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x12, 0x05, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x5d, 0x0a, 0x06, 0x52, 0x65, 0x73, 0x75,
-	0x6c, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x06, 0x6d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x12, 0x3b, 0x0a, 0x0b, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x53, 0x0a, 0x06, 0x52, 0x65, 0x70, 0x6f, 0x72,
-	0x74, 0x12, 0x22, 0x0a, 0x0c, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x4f, 0x66, 0x43, 0x61, 0x6c,
-	0x63, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x4f,
-	0x66, 0x43, 0x61, 0x6c, 0x63, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18,
-	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65,
-	0x73, 0x75, 0x6c, 0x74, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x4a, 0x0a, 0x08,
-	0x54, 0x6f, 0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x70, 0x31, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x02, 0x52, 0x02, 0x70, 0x31, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x74, 0x61,
-	0x50, 0x31, 0x18, 0x02, 0x20, 0x03, 0x28, 0x05, 0x52, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x31,
-	0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x32, 0x18, 0x03, 0x20, 0x03, 0x28, 0x05,
-	0x52, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x32, 0x22, 0x3c, 0x0a, 0x0d, 0x4d, 0x61, 0x78, 0x45,
-	0x6d, 0x76, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2b, 0x0a, 0x08, 0x74, 0x6f, 0x77,
-	0x50, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x67, 0x64,
-	0x65, 0x61, 0x6e, 0x2e, 0x54, 0x6f, 0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x52, 0x08, 0x74, 0x6f,
-	0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x22, 0x37, 0x0a, 0x0e, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75,
-	0x6c, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e,
-	0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22,
-	0x0f, 0x0a, 0x0d, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x22, 0x37, 0x0a, 0x0e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72,
-	0x74, 0x52, 0x06, 0x72, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x32, 0x8d, 0x01, 0x0a, 0x0c, 0x47, 0x44,
-	0x65, 0x61, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x4d, 0x61,
-	0x78, 0x45, 0x6d, 0x76, 0x12, 0x14, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x61, 0x78,
-	0x45, 0x6d, 0x76, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x67, 0x64, 0x65,
-	0x61, 0x6e, 0x2e, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x44, 0x0a, 0x13, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x4d, 0x61, 0x78,
-	0x45, 0x6d, 0x76, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x12, 0x14, 0x2e, 0x67, 0x64, 0x65,
-	0x61, 0x6e, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x15, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x19, 0x5a, 0x17, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x79, 0x6e, 0x69, 0x73, 0x68, 0x69, 0x2f, 0x67,
-	0x64, 0x65, 0x61, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	Name        string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Desc        string `protobuf:"bytes,2,opt,name=desc,proto3" json:"desc,omitempty"`
+	IsAvailable bool   `protobuf:"varint,3,opt,name=is_available,json=isAvailable,proto3" json:"is_available,omitempty"`
+}
+
+func (x *MetaBody) Reset() {
+	*x = MetaBody{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MetaBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MetaBody) ProtoMessage() {}
+
+func (x *MetaBody) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MetaBody.ProtoReflect.Descriptor instead.
+func (*MetaBody) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *MetaBody) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MetaBody) GetDesc() string {
+	if x != nil {
+		return x.Desc
+	}
+	return ""
+}
+
+func (x *MetaBody) GetIsAvailable() bool {
+	if x != nil {
+		return x.IsAvailable
+	}
+	return false
+}
+
+type Meta struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id         uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	MetaBody   *MetaBody              `protobuf:"bytes,2,opt,name=metaBody,proto3" json:"metaBody,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+}
+
+func (x *Meta) Reset() {
+	*x = Meta{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Meta) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Meta) ProtoMessage() {}
+
+func (x *Meta) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Meta.ProtoReflect.Descriptor instead.
+func (*Meta) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *Meta) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Meta) GetMetaBody() *MetaBody {
+	if x != nil {
+		return x.MetaBody
+	}
+	return nil
+}
+
+func (x *Meta) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *Meta) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+type GetMetaRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *GetMetaRequest) Reset() {
+	*x = GetMetaRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMetaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMetaRequest) ProtoMessage() {}
+
+func (x *GetMetaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMetaRequest.ProtoReflect.Descriptor instead.
+func (*GetMetaRequest) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetMetaRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type GetMetaResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Response:
+	//	*GetMetaResponse_Meta
+	//	*GetMetaResponse_Status
+	Response isGetMetaResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *GetMetaResponse) Reset() {
+	*x = GetMetaResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMetaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMetaResponse) ProtoMessage() {}
+
+func (x *GetMetaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMetaResponse.ProtoReflect.Descriptor instead.
+func (*GetMetaResponse) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{10}
+}
+
+func (m *GetMetaResponse) GetResponse() isGetMetaResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *GetMetaResponse) GetMeta() *Meta {
+	if x, ok := x.GetResponse().(*GetMetaResponse_Meta); ok {
+		return x.Meta
+	}
+	return nil
+}
+
+func (x *GetMetaResponse) GetStatus() *status.Status {
+	if x, ok := x.GetResponse().(*GetMetaResponse_Status); ok {
+		return x.Status
+	}
+	return nil
+}
+
+type isGetMetaResponse_Response interface {
+	isGetMetaResponse_Response()
+}
+
+type GetMetaResponse_Meta struct {
+	Meta *Meta `protobuf:"bytes,1,opt,name=meta,proto3,oneof"`
+}
+
+type GetMetaResponse_Status struct {
+	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3,oneof"`
+}
+
+func (*GetMetaResponse_Meta) isGetMetaResponse_Response() {}
+
+func (*GetMetaResponse_Status) isGetMetaResponse_Response() {}
+
+type CreateMetaRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MetaBody *MetaBody `protobuf:"bytes,1,opt,name=metaBody,proto3" json:"metaBody,omitempty"`
+}
+
+func (x *CreateMetaRequest) Reset() {
+	*x = CreateMetaRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateMetaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMetaRequest) ProtoMessage() {}
+
+func (x *CreateMetaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMetaRequest.ProtoReflect.Descriptor instead.
+func (*CreateMetaRequest) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CreateMetaRequest) GetMetaBody() *MetaBody {
+	if x != nil {
+		return x.MetaBody
+	}
+	return nil
+}
+
+type CreateMetaResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Response:
+	//	*CreateMetaResponse_Meta
+	//	*CreateMetaResponse_Status
+	Response isCreateMetaResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *CreateMetaResponse) Reset() {
+	*x = CreateMetaResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateMetaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMetaResponse) ProtoMessage() {}
+
+func (x *CreateMetaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMetaResponse.ProtoReflect.Descriptor instead.
+func (*CreateMetaResponse) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{12}
+}
+
+func (m *CreateMetaResponse) GetResponse() isCreateMetaResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *CreateMetaResponse) GetMeta() *Meta {
+	if x, ok := x.GetResponse().(*CreateMetaResponse_Meta); ok {
+		return x.Meta
+	}
+	return nil
+}
+
+func (x *CreateMetaResponse) GetStatus() *status.Status {
+	if x, ok := x.GetResponse().(*CreateMetaResponse_Status); ok {
+		return x.Status
+	}
+	return nil
+}
+
+type isCreateMetaResponse_Response interface {
+	isCreateMetaResponse_Response()
+}
+
+type CreateMetaResponse_Meta struct {
+	Meta *Meta `protobuf:"bytes,1,opt,name=meta,proto3,oneof"`
+}
+
+type CreateMetaResponse_Status struct {
+	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3,oneof"`
+}
+
+func (*CreateMetaResponse_Meta) isCreateMetaResponse_Response() {}
+
+func (*CreateMetaResponse_Status) isCreateMetaResponse_Response() {}
+
+type PutMetaRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id       uint32    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	MetaBody *MetaBody `protobuf:"bytes,2,opt,name=metaBody,proto3" json:"metaBody,omitempty"`
+}
+
+func (x *PutMetaRequest) Reset() {
+	*x = PutMetaRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PutMetaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PutMetaRequest) ProtoMessage() {}
+
+func (x *PutMetaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PutMetaRequest.ProtoReflect.Descriptor instead.
+func (*PutMetaRequest) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PutMetaRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *PutMetaRequest) GetMetaBody() *MetaBody {
+	if x != nil {
+		return x.MetaBody
+	}
+	return nil
+}
+
+type PutMetaResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Response:
+	//	*PutMetaResponse_UpdateTime
+	//	*PutMetaResponse_Status
+	Response isPutMetaResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *PutMetaResponse) Reset() {
+	*x = PutMetaResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PutMetaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PutMetaResponse) ProtoMessage() {}
+
+func (x *PutMetaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PutMetaResponse.ProtoReflect.Descriptor instead.
+func (*PutMetaResponse) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{14}
+}
+
+func (m *PutMetaResponse) GetResponse() isPutMetaResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *PutMetaResponse) GetUpdateTime() *timestamppb.Timestamp {
+	if x, ok := x.GetResponse().(*PutMetaResponse_UpdateTime); ok {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *PutMetaResponse) GetStatus() *status.Status {
+	if x, ok := x.GetResponse().(*PutMetaResponse_Status); ok {
+		return x.Status
+	}
+	return nil
+}
+
+type isPutMetaResponse_Response interface {
+	isPutMetaResponse_Response()
+}
+
+type PutMetaResponse_UpdateTime struct {
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=update_time,json=updateTime,proto3,oneof"`
+}
+
+type PutMetaResponse_Status struct {
+	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3,oneof"`
+}
+
+func (*PutMetaResponse_UpdateTime) isPutMetaResponse_Response() {}
+
+func (*PutMetaResponse_Status) isPutMetaResponse_Response() {}
+
+type DeleteMetaRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *DeleteMetaRequest) Reset() {
+	*x = DeleteMetaRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteMetaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMetaRequest) ProtoMessage() {}
+
+func (x *DeleteMetaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMetaRequest.ProtoReflect.Descriptor instead.
+func (*DeleteMetaRequest) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DeleteMetaRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteMetaResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Response:
+	//	*DeleteMetaResponse_DeleteTime
+	//	*DeleteMetaResponse_Status
+	Response isDeleteMetaResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *DeleteMetaResponse) Reset() {
+	*x = DeleteMetaResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteMetaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMetaResponse) ProtoMessage() {}
+
+func (x *DeleteMetaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMetaResponse.ProtoReflect.Descriptor instead.
+func (*DeleteMetaResponse) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{16}
+}
+
+func (m *DeleteMetaResponse) GetResponse() isDeleteMetaResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *DeleteMetaResponse) GetDeleteTime() *timestamppb.Timestamp {
+	if x, ok := x.GetResponse().(*DeleteMetaResponse_DeleteTime); ok {
+		return x.DeleteTime
+	}
+	return nil
+}
+
+func (x *DeleteMetaResponse) GetStatus() *status.Status {
+	if x, ok := x.GetResponse().(*DeleteMetaResponse_Status); ok {
+		return x.Status
+	}
+	return nil
+}
+
+type isDeleteMetaResponse_Response interface {
+	isDeleteMetaResponse_Response()
+}
+
+type DeleteMetaResponse_DeleteTime struct {
+	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=delete_time,json=deleteTime,proto3,oneof"`
+}
+
+type DeleteMetaResponse_Status struct {
+	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3,oneof"`
+}
+
+func (*DeleteMetaResponse_DeleteTime) isDeleteMetaResponse_Response() {}
+
+func (*DeleteMetaResponse_Status) isDeleteMetaResponse_Response() {}
+
+type GetMetaListRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StartId     uint32 `protobuf:"varint,1,opt,name=start_id,json=startId,proto3" json:"start_id,omitempty"`
+	IsAvailable bool   `protobuf:"varint,2,opt,name=is_available,json=isAvailable,proto3" json:"is_available,omitempty"`
+}
+
+func (x *GetMetaListRequest) Reset() {
+	*x = GetMetaListRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMetaListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMetaListRequest) ProtoMessage() {}
+
+func (x *GetMetaListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMetaListRequest.ProtoReflect.Descriptor instead.
+func (*GetMetaListRequest) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetMetaListRequest) GetStartId() uint32 {
+	if x != nil {
+		return x.StartId
+	}
+	return 0
+}
+
+func (x *GetMetaListRequest) GetIsAvailable() bool {
+	if x != nil {
+		return x.IsAvailable
+	}
+	return false
+}
+
+type GetMetaListIds struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Ids []uint32 `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+}
+
+func (x *GetMetaListIds) Reset() {
+	*x = GetMetaListIds{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMetaListIds) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMetaListIds) ProtoMessage() {}
+
+func (x *GetMetaListIds) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMetaListIds.ProtoReflect.Descriptor instead.
+func (*GetMetaListIds) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetMetaListIds) GetIds() []uint32 {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
+type GetMetaListResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Response:
+	//	*GetMetaListResponse_Ids
+	//	*GetMetaListResponse_Status
+	Response isGetMetaListResponse_Response `protobuf_oneof:"response"`
+}
+
+func (x *GetMetaListResponse) Reset() {
+	*x = GetMetaListResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_gdean_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMetaListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMetaListResponse) ProtoMessage() {}
+
+func (x *GetMetaListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gdean_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMetaListResponse.ProtoReflect.Descriptor instead.
+func (*GetMetaListResponse) Descriptor() ([]byte, []int) {
+	return file_gdean_proto_rawDescGZIP(), []int{19}
+}
+
+func (m *GetMetaListResponse) GetResponse() isGetMetaListResponse_Response {
+	if m != nil {
+		return m.Response
+	}
+	return nil
+}
+
+func (x *GetMetaListResponse) GetIds() *GetMetaListIds {
+	if x, ok := x.GetResponse().(*GetMetaListResponse_Ids); ok {
+		return x.Ids
+	}
+	return nil
+}
+
+func (x *GetMetaListResponse) GetStatus() *status.Status {
+	if x, ok := x.GetResponse().(*GetMetaListResponse_Status); ok {
+		return x.Status
+	}
+	return nil
+}
+
+type isGetMetaListResponse_Response interface {
+	isGetMetaListResponse_Response()
+}
+
+type GetMetaListResponse_Ids struct {
+	Ids *GetMetaListIds `protobuf:"bytes,1,opt,name=ids,proto3,oneof"`
+}
+
+type GetMetaListResponse_Status struct {
+	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3,oneof"`
+}
+
+func (*GetMetaListResponse_Ids) isGetMetaListResponse_Response() {}
+
+func (*GetMetaListResponse_Status) isGetMetaListResponse_Response() {}
+
+var File_gdean_proto protoreflect.FileDescriptor
+
+var file_gdean_proto_rawDesc = []byte{
+	0x0a, 0x0b, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x67,
+	0x64, 0x65, 0x61, 0x6e, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x17, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x72, 0x70,
+	0x63, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x5d,
+	0x0a, 0x06, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x61, 0x78, 0x45,
+	0x6d, 0x76, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6d, 0x61, 0x78, 0x45, 0x6d, 0x76,
+	0x12, 0x3b, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x53, 0x0a,
+	0x06, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x6e, 0x75, 0x6d, 0x62, 0x65,
+	0x72, 0x4f, 0x66, 0x43, 0x61, 0x6c, 0x63, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c, 0x6e,
+	0x75, 0x6d, 0x62, 0x65, 0x72, 0x4f, 0x66, 0x43, 0x61, 0x6c, 0x63, 0x12, 0x25, 0x0a, 0x06, 0x72,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x67, 0x64,
+	0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x52, 0x06, 0x72, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x22, 0x4a, 0x0a, 0x08, 0x54, 0x6f, 0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x12, 0x0e,
+	0x0a, 0x02, 0x70, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52, 0x02, 0x70, 0x31, 0x12, 0x16,
+	0x0a, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x31, 0x18, 0x02, 0x20, 0x03, 0x28, 0x05, 0x52, 0x06,
+	0x64, 0x61, 0x74, 0x61, 0x50, 0x31, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x32,
+	0x18, 0x03, 0x20, 0x03, 0x28, 0x05, 0x52, 0x06, 0x64, 0x61, 0x74, 0x61, 0x50, 0x32, 0x22, 0x3c,
+	0x0a, 0x0d, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x2b, 0x0a, 0x08, 0x74, 0x6f, 0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0f, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x54, 0x6f, 0x77, 0x50, 0x44, 0x61,
+	0x74, 0x61, 0x52, 0x08, 0x74, 0x6f, 0x77, 0x50, 0x44, 0x61, 0x74, 0x61, 0x22, 0x37, 0x0a, 0x0e,
+	0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25,
+	0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d,
+	0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x52, 0x06, 0x72,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x0f, 0x0a, 0x0d, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x37, 0x0a, 0x0e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x65, 0x70, 0x6f,
+	0x72, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e,
+	0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x06, 0x72, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x22,
+	0x55, 0x0a, 0x08, 0x4d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
+	0x12, 0x0a, 0x04, 0x64, 0x65, 0x73, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64,
+	0x65, 0x73, 0x63, 0x12, 0x21, 0x0a, 0x0c, 0x69, 0x73, 0x5f, 0x61, 0x76, 0x61, 0x69, 0x6c, 0x61,
+	0x62, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x69, 0x73, 0x41, 0x76, 0x61,
+	0x69, 0x6c, 0x61, 0x62, 0x6c, 0x65, 0x22, 0xbd, 0x01, 0x0a, 0x04, 0x4d, 0x65, 0x74, 0x61, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x2b, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0f, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x42, 0x6f,
+	0x64, 0x79, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x12, 0x3b, 0x0a, 0x0b,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x3b, 0x0a, 0x0b, 0x75, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x20, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74,
+	0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x22, 0x6e, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x4d,
+	0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x21, 0x0a, 0x04, 0x6d,
+	0x65, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x67, 0x64, 0x65, 0x61,
+	0x6e, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x48, 0x00, 0x52, 0x04, 0x6d, 0x65, 0x74, 0x61, 0x12, 0x2c,
+	0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x53, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x0a, 0x0a, 0x08,
+	0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x40, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2b, 0x0a,
+	0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0f, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79,
+	0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x22, 0x71, 0x0a, 0x12, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x21, 0x0a, 0x04, 0x6d, 0x65, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b,
+	0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x48, 0x00, 0x52, 0x04, 0x6d,
+	0x65, 0x74, 0x61, 0x12, 0x2c, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x72, 0x70, 0x63,
+	0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x42, 0x0a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4d, 0x0a,
+	0x0e, 0x50, 0x75, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x2b, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0f, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x42, 0x6f,
+	0x64, 0x79, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x42, 0x6f, 0x64, 0x79, 0x22, 0x8a, 0x01, 0x0a,
+	0x0f, 0x50, 0x75, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x3d, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x48, 0x00, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12,
+	0x2c, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x12, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x0a, 0x0a,
+	0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x0a, 0x11, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x02, 0x69, 0x64, 0x22, 0x8d,
+	0x01, 0x0a, 0x12, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x0b, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x5f,
+	0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x48, 0x00, 0x52, 0x0a, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65,
+	0x54, 0x69, 0x6d, 0x65, 0x12, 0x2c, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x72, 0x70,
+	0x63, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x42, 0x0a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x52,
+	0x0a, 0x12, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07, 0x73, 0x74, 0x61, 0x72, 0x74, 0x49, 0x64, 0x12,
+	0x21, 0x0a, 0x0c, 0x69, 0x73, 0x5f, 0x61, 0x76, 0x61, 0x69, 0x6c, 0x61, 0x62, 0x6c, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x69, 0x73, 0x41, 0x76, 0x61, 0x69, 0x6c, 0x61, 0x62,
+	0x6c, 0x65, 0x22, 0x22, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x4c, 0x69, 0x73,
+	0x74, 0x49, 0x64, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0d, 0x52, 0x03, 0x69, 0x64, 0x73, 0x22, 0x7a, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74,
+	0x61, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x29, 0x0a,
+	0x03, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67, 0x64, 0x65,
+	0x61, 0x6e, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x4c, 0x69, 0x73, 0x74, 0x49, 0x64,
+	0x73, 0x48, 0x00, 0x52, 0x03, 0x69, 0x64, 0x73, 0x12, 0x2c, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x48, 0x00, 0x52, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x0a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x32, 0x8d, 0x01, 0x0a, 0x0c, 0x47, 0x44, 0x65, 0x61, 0x6e, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x12, 0x14, 0x2e,
+	0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x4d, 0x61, 0x78, 0x45,
+	0x6d, 0x76, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x44, 0x0a, 0x13,
+	0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x4d, 0x61, 0x78, 0x45, 0x6d, 0x76, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x73, 0x12, 0x14, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x52, 0x65, 0x70, 0x6f,
+	0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x67, 0x64, 0x65, 0x61,
+	0x6e, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x32, 0xda, 0x02, 0x0a, 0x0e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3a, 0x0a, 0x07, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61,
+	0x12, 0x15, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e,
+	0x47, 0x65, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x00, 0x12, 0x43, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x12,
+	0x18, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x65,
+	0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x67, 0x64, 0x65, 0x61,
+	0x6e, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x07, 0x50, 0x75, 0x74, 0x4d, 0x65, 0x74,
+	0x61, 0x12, 0x15, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x50, 0x75, 0x74, 0x4d, 0x65, 0x74,
+	0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e,
+	0x2e, 0x50, 0x75, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x12, 0x43, 0x0a, 0x0a, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61,
+	0x12, 0x18, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d,
+	0x65, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x67, 0x64, 0x65,
+	0x61, 0x6e, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x46, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x4d, 0x65,
+	0x74, 0x61, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x19, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x47,
+	0x65, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1a, 0x2e, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x74,
+	0x61, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42,
+	0x19, 0x5a, 0x17, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x79, 0x6e,
+	0x69, 0x73, 0x68, 0x69, 0x2f, 0x67, 0x64, 0x65, 0x61, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
-	file_pb_gdean_proto_rawDescOnce sync.Once
-	file_pb_gdean_proto_rawDescData = file_pb_gdean_proto_rawDesc
+	file_gdean_proto_rawDescOnce sync.Once
+	file_gdean_proto_rawDescData = file_gdean_proto_rawDesc
 )
 
-func file_pb_gdean_proto_rawDescGZIP() []byte {
-	file_pb_gdean_proto_rawDescOnce.Do(func() {
-		file_pb_gdean_proto_rawDescData = protoimpl.X.CompressGZIP(file_pb_gdean_proto_rawDescData)
+func file_gdean_proto_rawDescGZIP() []byte {
+	file_gdean_proto_rawDescOnce.Do(func() {
+		file_gdean_proto_rawDescData = protoimpl.X.CompressGZIP(file_gdean_proto_rawDescData)
 	})
-	return file_pb_gdean_proto_rawDescData
+	return file_gdean_proto_rawDescData
 }
 
-var file_pb_gdean_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_pb_gdean_proto_goTypes = []interface{}{
+var file_gdean_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_gdean_proto_goTypes = []interface{}{
 	(*Result)(nil),                // 0: gdean.Result
 	(*Report)(nil),                // 1: gdean.Report
 	(*TowPData)(nil),              // 2: gdean.TowPData
@@ -442,32 +1377,71 @@ var file_pb_gdean_proto_goTypes = []interface{}{
 	(*MaxEmvResponse)(nil),        // 4: gdean.MaxEmvResponse
 	(*ReportRequest)(nil),         // 5: gdean.ReportRequest
 	(*ReportResponse)(nil),        // 6: gdean.ReportResponse
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*MetaBody)(nil),              // 7: gdean.MetaBody
+	(*Meta)(nil),                  // 8: gdean.Meta
+	(*GetMetaRequest)(nil),        // 9: gdean.GetMetaRequest
+	(*GetMetaResponse)(nil),       // 10: gdean.GetMetaResponse
+	(*CreateMetaRequest)(nil),     // 11: gdean.CreateMetaRequest
+	(*CreateMetaResponse)(nil),    // 12: gdean.CreateMetaResponse
+	(*PutMetaRequest)(nil),        // 13: gdean.PutMetaRequest
+	(*PutMetaResponse)(nil),       // 14: gdean.PutMetaResponse
+	(*DeleteMetaRequest)(nil),     // 15: gdean.DeleteMetaRequest
+	(*DeleteMetaResponse)(nil),    // 16: gdean.DeleteMetaResponse
+	(*GetMetaListRequest)(nil),    // 17: gdean.GetMetaListRequest
+	(*GetMetaListIds)(nil),        // 18: gdean.GetMetaListIds
+	(*GetMetaListResponse)(nil),   // 19: gdean.GetMetaListResponse
+	(*timestamppb.Timestamp)(nil), // 20: google.protobuf.Timestamp
+	(*status.Status)(nil),         // 21: google.rpc.Status
 }
-var file_pb_gdean_proto_depIdxs = []int32{
-	7, // 0: gdean.Result.create_time:type_name -> google.protobuf.Timestamp
-	0, // 1: gdean.Report.result:type_name -> gdean.Result
-	2, // 2: gdean.MaxEmvRequest.towPData:type_name -> gdean.TowPData
-	0, // 3: gdean.MaxEmvResponse.result:type_name -> gdean.Result
-	1, // 4: gdean.ReportResponse.report:type_name -> gdean.Report
-	3, // 5: gdean.GDeanService.MaxEmv:input_type -> gdean.MaxEmvRequest
-	5, // 6: gdean.GDeanService.ReportMaxEmvResults:input_type -> gdean.ReportRequest
-	4, // 7: gdean.GDeanService.MaxEmv:output_type -> gdean.MaxEmvResponse
-	6, // 8: gdean.GDeanService.ReportMaxEmvResults:output_type -> gdean.ReportResponse
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+var file_gdean_proto_depIdxs = []int32{
+	20, // 0: gdean.Result.create_time:type_name -> google.protobuf.Timestamp
+	0,  // 1: gdean.Report.result:type_name -> gdean.Result
+	2,  // 2: gdean.MaxEmvRequest.towPData:type_name -> gdean.TowPData
+	0,  // 3: gdean.MaxEmvResponse.result:type_name -> gdean.Result
+	1,  // 4: gdean.ReportResponse.report:type_name -> gdean.Report
+	7,  // 5: gdean.Meta.metaBody:type_name -> gdean.MetaBody
+	20, // 6: gdean.Meta.create_time:type_name -> google.protobuf.Timestamp
+	20, // 7: gdean.Meta.update_time:type_name -> google.protobuf.Timestamp
+	8,  // 8: gdean.GetMetaResponse.meta:type_name -> gdean.Meta
+	21, // 9: gdean.GetMetaResponse.status:type_name -> google.rpc.Status
+	7,  // 10: gdean.CreateMetaRequest.metaBody:type_name -> gdean.MetaBody
+	8,  // 11: gdean.CreateMetaResponse.meta:type_name -> gdean.Meta
+	21, // 12: gdean.CreateMetaResponse.status:type_name -> google.rpc.Status
+	7,  // 13: gdean.PutMetaRequest.metaBody:type_name -> gdean.MetaBody
+	20, // 14: gdean.PutMetaResponse.update_time:type_name -> google.protobuf.Timestamp
+	21, // 15: gdean.PutMetaResponse.status:type_name -> google.rpc.Status
+	20, // 16: gdean.DeleteMetaResponse.delete_time:type_name -> google.protobuf.Timestamp
+	21, // 17: gdean.DeleteMetaResponse.status:type_name -> google.rpc.Status
+	18, // 18: gdean.GetMetaListResponse.ids:type_name -> gdean.GetMetaListIds
+	21, // 19: gdean.GetMetaListResponse.status:type_name -> google.rpc.Status
+	3,  // 20: gdean.GDeanService.MaxEmv:input_type -> gdean.MaxEmvRequest
+	5,  // 21: gdean.GDeanService.ReportMaxEmvResults:input_type -> gdean.ReportRequest
+	9,  // 22: gdean.AnalyzeService.GetMeta:input_type -> gdean.GetMetaRequest
+	11, // 23: gdean.AnalyzeService.CreateMeta:input_type -> gdean.CreateMetaRequest
+	13, // 24: gdean.AnalyzeService.PutMeta:input_type -> gdean.PutMetaRequest
+	15, // 25: gdean.AnalyzeService.DeleteMeta:input_type -> gdean.DeleteMetaRequest
+	17, // 26: gdean.AnalyzeService.GetMetaList:input_type -> gdean.GetMetaListRequest
+	4,  // 27: gdean.GDeanService.MaxEmv:output_type -> gdean.MaxEmvResponse
+	6,  // 28: gdean.GDeanService.ReportMaxEmvResults:output_type -> gdean.ReportResponse
+	10, // 29: gdean.AnalyzeService.GetMeta:output_type -> gdean.GetMetaResponse
+	12, // 30: gdean.AnalyzeService.CreateMeta:output_type -> gdean.CreateMetaResponse
+	14, // 31: gdean.AnalyzeService.PutMeta:output_type -> gdean.PutMetaResponse
+	16, // 32: gdean.AnalyzeService.DeleteMeta:output_type -> gdean.DeleteMetaResponse
+	19, // 33: gdean.AnalyzeService.GetMetaList:output_type -> gdean.GetMetaListResponse
+	27, // [27:34] is the sub-list for method output_type
+	20, // [20:27] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
-func init() { file_pb_gdean_proto_init() }
-func file_pb_gdean_proto_init() {
-	if File_pb_gdean_proto != nil {
+func init() { file_gdean_proto_init() }
+func file_gdean_proto_init() {
+	if File_gdean_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_pb_gdean_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Result); i {
 			case 0:
 				return &v.state
@@ -479,7 +1453,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Report); i {
 			case 0:
 				return &v.state
@@ -491,7 +1465,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TowPData); i {
 			case 0:
 				return &v.state
@@ -503,7 +1477,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MaxEmvRequest); i {
 			case 0:
 				return &v.state
@@ -515,7 +1489,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MaxEmvResponse); i {
 			case 0:
 				return &v.state
@@ -527,7 +1501,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ReportRequest); i {
 			case 0:
 				return &v.state
@@ -539,7 +1513,7 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
-		file_pb_gdean_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_gdean_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ReportResponse); i {
 			case 0:
 				return &v.state
@@ -551,23 +1525,199 @@ func file_pb_gdean_proto_init() {
 				return nil
 			}
 		}
+		file_gdean_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MetaBody); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Meta); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetMetaRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetMetaResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateMetaRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateMetaResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PutMetaRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PutMetaResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteMetaRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteMetaResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetMetaListRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetMetaListIds); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_gdean_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetMetaListResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
+	file_gdean_proto_msgTypes[10].OneofWrappers = []interface{}{
+		(*GetMetaResponse_Meta)(nil),
+		(*GetMetaResponse_Status)(nil),
+	}
+	file_gdean_proto_msgTypes[12].OneofWrappers = []interface{}{
+		(*CreateMetaResponse_Meta)(nil),
+		(*CreateMetaResponse_Status)(nil),
+	}
+	file_gdean_proto_msgTypes[14].OneofWrappers = []interface{}{
+		(*PutMetaResponse_UpdateTime)(nil),
+		(*PutMetaResponse_Status)(nil),
+	}
+	file_gdean_proto_msgTypes[16].OneofWrappers = []interface{}{
+		(*DeleteMetaResponse_DeleteTime)(nil),
+		(*DeleteMetaResponse_Status)(nil),
+	}
+	file_gdean_proto_msgTypes[19].OneofWrappers = []interface{}{
+		(*GetMetaListResponse_Ids)(nil),
+		(*GetMetaListResponse_Status)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_pb_gdean_proto_rawDesc,
+			RawDescriptor: file_gdean_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   20,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
-		GoTypes:           file_pb_gdean_proto_goTypes,
-		DependencyIndexes: file_pb_gdean_proto_depIdxs,
-		MessageInfos:      file_pb_gdean_proto_msgTypes,
+		GoTypes:           file_gdean_proto_goTypes,
+		DependencyIndexes: file_gdean_proto_depIdxs,
+		MessageInfos:      file_gdean_proto_msgTypes,
 	}.Build()
-	File_pb_gdean_proto = out.File
-	file_pb_gdean_proto_rawDesc = nil
-	file_pb_gdean_proto_goTypes = nil
-	file_pb_gdean_proto_depIdxs = nil
+	File_gdean_proto = out.File
+	file_gdean_proto_rawDesc = nil
+	file_gdean_proto_goTypes = nil
+	file_gdean_proto_depIdxs = nil
 }

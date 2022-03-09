@@ -6,6 +6,7 @@ option go_package = "github.com/ynishi/gdean";
 package gdean;
 
 import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
 
 service GDeanService {
   rpc MaxEmv(MaxEmvRequest) returns(MaxEmvResponse) {}
@@ -34,3 +35,70 @@ message MaxEmvResponse { Result result = 1; }
 message ReportRequest {}
 
 message ReportResponse { Report report = 1; }
+
+service AnalyzeService {
+  rpc GetMeta(GetMetaRequest) returns(GetMetaResponse) {}
+  rpc CreateMeta(CreateMetaRequest) returns(CreateMetaResponse) {}
+  rpc PutMeta(PutMetaRequest) returns(PutMetaResponse) {}
+  rpc DeleteMeta(DeleteMetaRequest) returns(DeleteMetaResponse) {}
+  rpc GetMetaList(GetMetaListRequest) returns(GetMetaListResponse) {}
+}
+
+message MetaBody {
+  string name = 1;
+  string desc = 2;
+  bool is_available = 3;
+}
+
+message Meta {
+  uint32 id = 1;
+  MetaBody metaBody = 2;
+  google.protobuf.Timestamp create_time = 3;
+  google.protobuf.Timestamp update_time = 4;
+}
+message GetMetaRequest { uint32 id = 1; }
+message GetMetaResponse {
+  oneof response {
+    Meta meta = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message CreateMetaRequest { MetaBody metaBody = 1; }
+message CreateMetaResponse {
+  oneof response {
+    Meta meta = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message PutMetaRequest {
+  uint32 id = 1;
+  MetaBody metaBody = 2;
+}
+message PutMetaResponse {
+  oneof response {
+    google.protobuf.Timestamp update_time = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message DeleteMetaRequest { uint32 id = 1; }
+message DeleteMetaResponse {
+  oneof response {
+    google.protobuf.Timestamp delete_time = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message GetMetaListRequest {
+  uint32 start_id = 1;
+  bool is_available = 2;
+}
+message GetMetaListIds { repeated uint32 ids = 1; }
+message GetMetaListResponse {
+  oneof response {
+    GetMetaListIds ids = 1;
+    google.rpc.Status status = 2;
+  }
+}
