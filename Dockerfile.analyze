@@ -1,24 +1,44 @@
-FROM golang:alpine3.15 as builder
+FROM python:3.10-slim-bullseye as builder
 
-RUN apk update && apk add gcc sqlite-libs musl-dev
+WORKDIR /app/
+
+RUN python -m venv /opt/venv
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY calc/requirements.txt /app/requirements.txt
+RUN pip install -Ur requirements.txt
+
+FROM golang:1.17.8-bullseye as gobuilder
+
+RUN apt update && apt install libsqlite3-dev
 
 ENV GOOS=linux
 ENV GOARCH=amd64
 
 WORKDIR /go/gdean
 
-COPY go.mod go.sum ./ 
+COPY go.mod go.sum ./
 
 RUN go mod download
 
 COPY . .
 
 RUN go build -ldflags "-s -w" -o analyze-app cmd/analyzeapi/main.go cmd/analyzeapi/wire_gen.go
+RUN ldd analyze-app
 
-FROM golang:alpine3.15
+FROM python:3.10-slim-bullseye
 
-COPY --from=builder /go/gdean/analyze-app /analyze-app
-COPY --from=builder /go/gdean/config /go/config
-COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/ld-linux.so.1
+WORKDIR /app/
+COPY --from=builder /opt/venv /opt/venv
 
-CMD ["/analyze-app"]
+ENV PATH="/opt/venv/bin:$PATH"
+COPY calc /app/calc
+
+COPY --from=gobuilder /go/gdean/analyze-app /app/analyze-app
+COPY --from=gobuilder /go/gdean/config /app/config
+COPY --from=gobuilder /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux-gnu/libpthread.so.0
+COPY --from=gobuilder /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so.2
+COPY --from=gobuilder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
+
+CMD ["/app/analyze-app"]
