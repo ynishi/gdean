@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	lru "github.com/hashicorp/golang-lru"
 	pb "github.com/ynishi/gdean/pb"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -59,6 +60,7 @@ type AnalyzeDBGetter interface {
 // to default func definition injectable conn
 type DefaultAnalyzeRepository struct {
 	DBGetter AnalyzeDBGetter
+	Cache    *lru.Cache
 }
 
 func (s *DefaultAnalyzeRepository) Init() error {
@@ -67,10 +69,21 @@ func (s *DefaultAnalyzeRepository) Init() error {
 		return err
 	}
 	db.AutoMigrate(&Meta{})
+	cache, err := lru.New(128)
+	if err != nil {
+		return err
+	}
+	s.Cache = cache
 	return nil
 }
 
 func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
+	if s.Cache != nil {
+		if v, ok := s.Cache.Get(id); ok {
+			var meta = v.(pb.Meta)
+			return &meta, nil
+		}
+	}
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
@@ -82,6 +95,9 @@ func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
 	pbMeta, err := toPBMeta(&meta)
 	if err != nil {
 		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Add(id, pbMeta)
 	}
 	return pbMeta, nil
 }
@@ -102,6 +118,9 @@ func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, erro
 	pbMeta, err := toPBMeta(meta)
 	if err != nil {
 		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Add(pbMeta.Id, pbMeta)
 	}
 	return pbMeta, nil
 }
@@ -131,6 +150,9 @@ func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Me
 	if err != nil {
 		return nil, err
 	}
+	if s.Cache != nil {
+		s.Cache.Add(id, pbMeta)
+	}
 	return pbMeta, nil
 }
 
@@ -148,6 +170,9 @@ func (s *DefaultAnalyzeRepository) Delete(id uint32) (*pb.Meta, error) {
 	pbMeta, err := toPBMeta(&meta)
 	if err != nil {
 		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Remove(id)
 	}
 	return pbMeta, nil
 }
