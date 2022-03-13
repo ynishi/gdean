@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"database/sql"
 	"database/sql/driver"
 	"regexp"
@@ -64,7 +65,9 @@ func TestShouldFetch(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "name", "desc", "is_available", "param_def"}).AddRow(1, "name1", "desc of name1", true, "null")
 	mock.ExpectQuery(q).WithArgs(1).WillReturnRows(rows)
 	meta := pb.MetaBody{Name: "name1", Desc: "desc of name1", IsAvailable: true}
-	m, err := repo.Fetch(1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	m, err := repo.Fetch(ctx, 1)
 	assert.Nil(t, err)
 	assert.NotNil(t, m)
 	if err == nil {
@@ -79,7 +82,9 @@ func TestShouldCreate(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec("^INSERT INTO `meta`*").WithArgs(anyTime, anyTime, nil, "name1", "desc of name1", true, "null").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
-	m, err := repo.Create(&meta)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	m, err := repo.Create(ctx, &meta)
 	assert.Nil(t, err)
 	assert.NotNil(t, m)
 	if err == nil {
@@ -97,7 +102,9 @@ func TestShouldPut(t *testing.T) {
 	mock.ExpectExec("^UPDATE `meta`*").WithArgs(anyTime, anyTime, nil, "name2", "desc of name2", false, `{"x":"float"}`, 1).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 	meta := pb.MetaBody{Name: "name2", Desc: "desc of name2", IsAvailable: false, ParamDef: map[string]string{"x": "float"}}
-	m, err := repo.Put(1, &meta)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	m, err := repo.Put(ctx, 1, &meta)
 	assert.Nil(t, err)
 	assert.NotNil(t, m)
 	if err == nil {
@@ -114,9 +121,11 @@ func TestShouldDelete(t *testing.T) {
 	mock.ExpectExec("^UPDATE `meta` SET `deleted_at`=*").WithArgs(anyTime, 1, 1).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 	mock.ExpectQuery(q).WithArgs(1).WillReturnError(sql.ErrNoRows)
-	_, err := repo.Delete(1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err := repo.Delete(ctx, 1)
 	assert.Nil(t, err)
-	fetched, err := repo.Fetch(1)
+	fetched, err := repo.Fetch(ctx, 1)
 	assert.Nil(t, err)
 	assert.EqualError(t, sql.ErrNoRows, "sql: no rows in result set")
 	assert.Nil(t, fetched)

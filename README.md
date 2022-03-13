@@ -22,6 +22,10 @@ docker build -t gdean-analyze -f Dockerfile.analyze .
 source calc/venv/bin/activate
 go run cmd/api/main.go cmd/api/wire_gen.go
 ```
+or
+```
+docker run -p 50051:50051 gdean-analyze
+```
 ## test
 ```
 source calc/venv/bin/activate

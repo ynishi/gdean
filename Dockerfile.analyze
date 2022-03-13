@@ -1,4 +1,6 @@
-FROM golang:1.17 as builder
+FROM golang:alpine3.15 as builder
+
+RUN apk update && apk add gcc sqlite-libs musl-dev
 
 ENV GOOS=linux
 ENV GOARCH=amd64
@@ -13,11 +15,10 @@ COPY . .
 
 RUN go build -ldflags "-s -w" -o analyze-app cmd/analyzeapi/main.go cmd/analyzeapi/wire_gen.go
 
-
-FROM alpine:latest 
-
-RUN apk add sqlite-libs
+FROM golang:alpine3.15
 
 COPY --from=builder /go/gdean/analyze-app /analyze-app
-COPY --from=builder /go/gdean/config /config
+COPY --from=builder /go/gdean/config /go/config
+COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/ld-linux.so.1
+
 CMD ["/analyze-app"]

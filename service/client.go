@@ -64,7 +64,7 @@ func GetMeta(id uint32) *pb.GetMetaResponse {
 	defer conn.Close()
 	c := pb.NewAnalyzeServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
 	defer cancel()
 
 	req := pb.GetMetaRequest{}

@@ -39,7 +39,7 @@ func DefaultAnalyzeServerWithRepo(ctx context.Context, repo AnalyzeRepository) *
 
 // impl for GRPC interface
 func (s *AnalyzeServer) GetMeta(ctx context.Context, in *pb.GetMetaRequest) (res *pb.GetMetaResponse, err error) {
-	meta, err := s.Repo.Fetch(in.Id)
+	meta, err := s.Repo.Fetch(ctx, in.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (s *AnalyzeServer) GetMeta(ctx context.Context, in *pb.GetMetaRequest) (res
 }
 
 func (s *AnalyzeServer) CreateMeta(ctx context.Context, in *pb.CreateMetaRequest) (*pb.CreateMetaResponse, error) {
-	meta, err := s.Repo.Create(in.MetaBody)
+	meta, err := s.Repo.Create(ctx, in.MetaBody)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (s *AnalyzeServer) CreateMeta(ctx context.Context, in *pb.CreateMetaRequest
 }
 
 func (s *AnalyzeServer) PutMeta(ctx context.Context, in *pb.PutMetaRequest) (*pb.PutMetaResponse, error) {
-	meta, err := s.Repo.Put(in.Id, in.MetaBody)
+	meta, err := s.Repo.Put(ctx, in.Id, in.MetaBody)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (s *AnalyzeServer) PutMeta(ctx context.Context, in *pb.PutMetaRequest) (*pb
 }
 
 func (s *AnalyzeServer) DeleteMeta(ctx context.Context, in *pb.DeleteMetaRequest) (*pb.DeleteMetaResponse, error) {
-	meta, err := s.Repo.Delete(in.Id)
+	meta, err := s.Repo.Delete(ctx, in.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s *AnalyzeServer) DeleteMeta(ctx context.Context, in *pb.DeleteMetaRequest
 }
 
 func (s *AnalyzeServer) GetMetaList(ctx context.Context, in *pb.GetMetaListRequest) (*pb.GetMetaListResponse, error) {
-	ids, err := s.Repo.FetchFrom(in.StartId)
+	ids, err := s.Repo.FetchFrom(ctx, in.StartId)
 	if err != nil {
 		return nil, err
 	}
@@ -106,11 +106,11 @@ type Meta struct {
 // repository
 type AnalyzeRepository interface {
 	Init() error
-	Fetch(id uint32) (*pb.Meta, error)
-	Create(*pb.MetaBody) (*pb.Meta, error)
-	Put(uint32, *pb.MetaBody) (*pb.Meta, error)
-	Delete(uint32) (*pb.Meta, error)
-	FetchFrom(uint32) ([]uint32, error)
+	Fetch(ctx context.Context, id uint32) (*pb.Meta, error)
+	Create(ctx context.Context, metaBody *pb.MetaBody) (*pb.Meta, error)
+	Put(ctx context.Context, id uint32, metaBody *pb.MetaBody) (*pb.Meta, error)
+	Delete(ctx context.Context, id uint32) (*pb.Meta, error)
+	FetchFrom(ctx context.Context, id uint32) ([]uint32, error)
 }
 
 // to inject db conn to repository
@@ -154,7 +154,7 @@ func (s *DefaultAnalyzeRepository) Init() (err error) {
 	return nil
 }
 
-func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
+func (s *DefaultAnalyzeRepository) Fetch(ctx context.Context, id uint32) (*pb.Meta, error) {
 	if s.Cache != nil {
 		if v, ok := s.Cache.Get(id); ok {
 			return v.(*pb.Meta), nil
@@ -165,9 +165,9 @@ func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
 		return nil, err
 	}
 	var meta Meta
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
-	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		return db.First(&meta, id).Error
 	})
 	if err != nil {
@@ -183,7 +183,7 @@ func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
 	return pbMeta, nil
 }
 
-func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, error) {
+func (s *DefaultAnalyzeRepository) Create(ctx context.Context, metaBody *pb.MetaBody) (*pb.Meta, error) {
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
@@ -192,7 +192,12 @@ func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, erro
 	if err != nil {
 		return nil, err
 	}
-	if err := db.Create(meta).Error; err != nil {
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		return db.Create(meta).Error
+	})
+	if err != nil {
 		return nil, err
 	}
 	pbMeta, err := toPBMeta(meta)
@@ -205,7 +210,7 @@ func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, erro
 	return pbMeta, nil
 }
 
-func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Meta, error) {
+func (s *DefaultAnalyzeRepository) Put(ctx context.Context, id uint32, metaBody *pb.MetaBody) (*pb.Meta, error) {
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
@@ -215,9 +220,9 @@ func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Me
 		return nil, err
 	}
 	var meta Meta
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
-	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		return db.First(&meta, id).Error
 	})
 	if err != nil {
@@ -228,9 +233,9 @@ func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Me
 	meta.IsAvailable = metaBody.IsAvailable
 	meta.ParamDef = string(paramDef)
 	meta.UpdatedAt = time.Now()
-	ctxSave, cancelSave := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxSave, cancelSave := context.WithTimeout(ctx, 6*time.Second)
 	defer cancelSave()
-	err = runutil.Retry(5*time.Second, ctxSave.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxSave.Done(), func() error {
 		return db.Save(&meta).Error
 	})
 	if err != nil {
@@ -246,23 +251,23 @@ func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Me
 	return pbMeta, nil
 }
 
-func (s *DefaultAnalyzeRepository) Delete(id uint32) (*pb.Meta, error) {
+func (s *DefaultAnalyzeRepository) Delete(ctx context.Context, id uint32) (*pb.Meta, error) {
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
 	}
 	var meta Meta
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
-	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		return db.First(&meta, id).Error
 	})
 	if err != nil {
 		return nil, err
 	}
-	ctxDel, cancelDel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxDel, cancelDel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancelDel()
-	err = runutil.Retry(5*time.Second, ctxDel.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxDel.Done(), func() error {
 		return db.Delete(&meta).Error
 	})
 	if err != nil {
@@ -278,17 +283,17 @@ func (s *DefaultAnalyzeRepository) Delete(id uint32) (*pb.Meta, error) {
 	return pbMeta, nil
 }
 
-func (s *DefaultAnalyzeRepository) FetchFrom(id uint32) ([]uint32, error) {
+func (s *DefaultAnalyzeRepository) FetchFrom(ctx context.Context, id uint32) ([]uint32, error) {
 	lm := 10
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
 	}
 	metas := make([]Meta, lm)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	var res *gorm.DB
-	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		res = db.Limit(lm).Find(&metas)
 		return res.Error
 	})
@@ -390,9 +395,9 @@ func NewMysqlAnalyzeRepository(info *MysqlConnInfo) *MysqlAnalyzeRepository {
 	return &MysqlAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &MysqlDBGetter{Info: info}}}
 }
 
+// helper converters
 var ErrNilInput = errors.New("nil in input")
 
-// helper converters
 func toPBMeta(meta *Meta) (*pb.Meta, error) {
 	if meta == nil {
 		return nil, ErrNilInput
