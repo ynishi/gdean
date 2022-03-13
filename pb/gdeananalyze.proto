@@ -1,0 +1,87 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/ynishi/gdean";
+
+package gdean;
+
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+
+service AnalyzeService {
+  rpc GetMeta(GetMetaRequest) returns(GetMetaResponse) {}
+  rpc CreateMeta(CreateMetaRequest) returns(CreateMetaResponse) {}
+  rpc PutMeta(PutMetaRequest) returns(PutMetaResponse) {}
+  rpc DeleteMeta(DeleteMetaRequest) returns(DeleteMetaResponse) {}
+  rpc GetMetaList(GetMetaListRequest) returns(GetMetaListResponse) {}
+  rpc GetMetrics(GetMetricsRequest) returns(GetMetricsResponse) {}
+}
+
+message Metrics {
+  uint32 id = 1;
+  int32 sum_of_use = 2;
+  int32 mean_of_during = 3;
+  float error_rate = 4;
+}
+message GetMetricsRequest { repeated uint32 ids = 1; }
+message GetMetricsResponse { map<uint32, Metrics> metrics = 1; }
+
+message MetaBody {
+  string name = 1;
+  string desc = 2;
+  map<string, string> param_def = 3;
+  bool is_available = 4;
+}
+
+message Meta {
+  uint32 id = 1;
+  MetaBody metaBody = 2;
+  google.protobuf.Timestamp create_time = 3;
+  google.protobuf.Timestamp update_time = 4;
+}
+message GetMetaRequest { uint32 id = 1; }
+message GetMetaResponse {
+  oneof response {
+    Meta meta = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message CreateMetaRequest { MetaBody metaBody = 1; }
+message CreateMetaResponse {
+  oneof response {
+    Meta meta = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message PutMetaRequest {
+  uint32 id = 1;
+  MetaBody metaBody = 2;
+}
+message PutMetaResponse {
+  oneof response {
+    google.protobuf.Timestamp update_time = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message DeleteMetaRequest { uint32 id = 1; }
+message DeleteMetaResponse {
+  oneof response {
+    google.protobuf.Timestamp delete_time = 1;
+    google.rpc.Status status = 2;
+  }
+}
+
+message GetMetaListRequest {
+  uint32 start_id = 1;
+  bool is_available = 2;
+}
+message GetMetaListIds { repeated uint32 ids = 1; }
+message GetMetaListResponse {
+  oneof response {
+    GetMetaListIds ids = 1;
+    google.rpc.Status status = 2;
+  }
+}
