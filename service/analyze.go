@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/rs/zerolog/log"
 	"github.com/thanos-io/thanos/pkg/runutil"
 	pb "github.com/ynishi/gdean/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -30,7 +30,9 @@ func DefaultAnalyzeServiceServer() *AnalyzeServer {
 // constructors for server
 func DefaultAnalyzeServerWithRepo(ctx context.Context, repo AnalyzeRepository) *AnalyzeServer {
 	server := DefaultAnalyzeServiceServer()
-	repo.Init()
+	if err := repo.Init(); err != nil {
+		return nil
+	}
 	server.Repo = repo
 	return server
 }
@@ -49,7 +51,7 @@ func (s *AnalyzeServer) CreateMeta(ctx context.Context, in *pb.CreateMetaRequest
 	if err != nil {
 		return nil, err
 	}
-	return &pb.CreateMetaResponse{Response: &pb.CreateMetaResponse_Meta{meta}}, nil
+	return &pb.CreateMetaResponse{Response: &pb.CreateMetaResponse_Meta{Meta: meta}}, nil
 }
 
 func (s *AnalyzeServer) PutMeta(ctx context.Context, in *pb.PutMetaRequest) (*pb.PutMetaResponse, error) {
@@ -57,7 +59,7 @@ func (s *AnalyzeServer) PutMeta(ctx context.Context, in *pb.PutMetaRequest) (*pb
 	if err != nil {
 		return nil, err
 	}
-	return &pb.PutMetaResponse{Response: &pb.PutMetaResponse_UpdateTime{meta.UpdateTime}}, nil
+	return &pb.PutMetaResponse{Response: &pb.PutMetaResponse_UpdateTime{UpdateTime: meta.UpdateTime}}, nil
 }
 
 func (s *AnalyzeServer) DeleteMeta(ctx context.Context, in *pb.DeleteMetaRequest) (*pb.DeleteMetaResponse, error) {
@@ -65,7 +67,7 @@ func (s *AnalyzeServer) DeleteMeta(ctx context.Context, in *pb.DeleteMetaRequest
 	if err != nil {
 		return nil, err
 	}
-	return &pb.DeleteMetaResponse{Response: &pb.DeleteMetaResponse_DeleteTime{meta.UpdateTime}}, nil
+	return &pb.DeleteMetaResponse{Response: &pb.DeleteMetaResponse_DeleteTime{DeleteTime: meta.UpdateTime}}, nil
 }
 
 func (s *AnalyzeServer) GetMetaList(ctx context.Context, in *pb.GetMetaListRequest) (*pb.GetMetaListResponse, error) {
@@ -73,7 +75,7 @@ func (s *AnalyzeServer) GetMetaList(ctx context.Context, in *pb.GetMetaListReque
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetMetaListResponse{Response: &pb.GetMetaListResponse_Ids{&pb.GetMetaListIds{Ids: ids}}}, nil
+	return &pb.GetMetaListResponse{Response: &pb.GetMetaListResponse_Ids{Ids: &pb.GetMetaListIds{Ids: ids}}}, nil
 }
 
 // TODO
@@ -87,11 +89,7 @@ func (s *AnalyzeServer) MaxEmv(ctx context.Context, in *pb.MaxEmvRequest) (*pb.M
 	if err != nil {
 		return nil, err
 	}
-	ct, err := ptypes.TimestampProto(time.Now())
-	if err != nil {
-		return nil, err
-	}
-	result := pb.Result{MaxEmv: maxEmv, CreateTime: ct}
+	result := pb.Result{MaxEmv: maxEmv, CreateTime: timestamppb.Now()}
 	return &pb.MaxEmvResponse{MaxEmv: result.MaxEmv, CreateTime: result.CreateTime}, nil
 }
 
@@ -159,8 +157,7 @@ func (s *DefaultAnalyzeRepository) Init() (err error) {
 func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
 	if s.Cache != nil {
 		if v, ok := s.Cache.Get(id); ok {
-			var meta = v.(pb.Meta)
-			return &meta, nil
+			return v.(*pb.Meta), nil
 		}
 	}
 	db, err := s.DBGetter.GetDB()
@@ -404,15 +401,17 @@ func toPBMeta(meta *Meta) (*pb.Meta, error) {
 	if err := json.Unmarshal([]byte(meta.ParamDef), &paramDef); err != nil {
 		return nil, err
 	}
-	ct, err := ptypes.TimestampProto(meta.CreatedAt)
-	if err != nil {
-		return nil, err
-	}
-	ut, err := ptypes.TimestampProto(meta.UpdatedAt)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.Meta{Id: uint32(meta.ID), MetaBody: &pb.MetaBody{Name: meta.Name, Desc: meta.Desc, ParamDef: paramDef, IsAvailable: meta.IsAvailable}, CreateTime: ct, UpdateTime: ut}, nil
+	return &pb.Meta{
+		Id: uint32(meta.ID),
+		MetaBody: &pb.MetaBody{
+			Name:        meta.Name,
+			Desc:        meta.Desc,
+			ParamDef:    paramDef,
+			IsAvailable: meta.IsAvailable,
+		},
+		CreateTime: timestamppb.New(meta.CreatedAt),
+		UpdateTime: timestamppb.New(meta.UpdatedAt),
+	}, nil
 }
 
 func fromPBMetaBody(metaBody *pb.MetaBody) (*Meta, error) {

@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/thoas/go-funk"
+	//	"github.com/thoas/go-funk"
 	"os/exec"
 )
 
@@ -24,6 +24,7 @@ func calcMaxEmv(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 	return meo["ans"], nil
 }
 
+/*
 func calcMaxEmvGo(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 	p2 := 1 - p1
 	l := len(dataP1)
@@ -41,6 +42,7 @@ func calcMaxEmvGo(p1 float32, dataP1 []int32, dataP2 []int32) (int32, error) {
 	return int32(maxSumI), nil
 
 }
+*/
 
 type PyPayload struct {
 	Name string      `json:"name"`

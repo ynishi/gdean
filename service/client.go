@@ -58,3 +58,17 @@ func CreateMeta(name, desc string, isAvailable bool, paramDef map[string]string)
 	r, _ := c.CreateMeta(ctx, &req)
 	return r
 }
+
+func GetMeta(id uint32) *pb.GetMetaResponse {
+	conn, _ := grpc.Dial(DialInfo, grpc.WithInsecure())
+	defer conn.Close()
+	c := pb.NewAnalyzeServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	req := pb.GetMetaRequest{}
+	req.Id = id
+	r, _ := c.GetMeta(ctx, &req)
+	return r
+}

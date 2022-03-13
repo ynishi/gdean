@@ -28,5 +28,7 @@ source calc/venv/bin/activate
 cd service
 go test
 ```
-
-
+## lint
+```
+golangci-lint run
+```

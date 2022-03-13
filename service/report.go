@@ -39,7 +39,9 @@ func DefaultSqlite3ConnInfo() *Sqlite3ConnInfo {
 func NewSqlite3ReportRepository(filename *Sqlite3ConnInfo) *Sqlite3ReportRepository {
 	r := Sqlite3ReportRepository{filename: *filename}
 	db := r.getDB()
-	db.AutoMigrate(&ReportModel{})
+	if err := db.AutoMigrate(&ReportModel{}); err != nil {
+		return nil
+	}
 	return &r
 }
 

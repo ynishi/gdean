@@ -6,13 +6,13 @@ import (
 )
 
 type Config struct {
-	Host          string `yaml:host`
-	Port          int    `yaml:port`
-	MysqlHost     string `yaml:mysql_host`
-	MysqlPort     uint   `yaml:mysql_port`
-	MysqlUser     string `yaml:mysql_user`
-	MysqlPassword string `yaml:mysql_password`
-	MysqlDbName   string `yaml:mysql_dbname`
+	Host          string `yaml:"host"`
+	Port          int    `yaml:"port"`
+	MysqlHost     string `yaml:"mysql_host"`
+	MysqlPort     uint   `yaml:"mysql_port"`
+	MysqlUser     string `yaml:"mysql_user"`
+	MysqlPassword string `yaml:"mysql_password"`
+	MysqlDbName   string `yaml:"mysql_dbname"`
 }
 
 var cfg Config

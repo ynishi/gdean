@@ -26,7 +26,7 @@ type MockDBGetter struct {
 // constructor for mock
 func NewMockRepository() (*MockRepository, sqlmock.Sqlmock) {
 	getter := MockDBGetter{}
-	getter.GetDB()
+	_, _ = getter.GetDB()
 	return &MockRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &getter}}, getter.Mock
 }
 
@@ -117,6 +117,7 @@ func TestShouldDelete(t *testing.T) {
 	_, err := repo.Delete(1)
 	assert.Nil(t, err)
 	fetched, err := repo.Fetch(1)
+	assert.Nil(t, err)
 	assert.EqualError(t, sql.ErrNoRows, "sql: no rows in result set")
 	assert.Nil(t, fetched)
 }
