@@ -18,7 +18,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GDeanServiceClient interface {
-	MaxEmv(ctx context.Context, in *MaxEmvRequest, opts ...grpc.CallOption) (*MaxEmvResponse, error)
 	ReportMaxEmvResults(ctx context.Context, in *ReportRequest, opts ...grpc.CallOption) (*ReportResponse, error)
 }
 
@@ -28,15 +27,6 @@ type gDeanServiceClient struct {
 
 func NewGDeanServiceClient(cc grpc.ClientConnInterface) GDeanServiceClient {
 	return &gDeanServiceClient{cc}
-}
-
-func (c *gDeanServiceClient) MaxEmv(ctx context.Context, in *MaxEmvRequest, opts ...grpc.CallOption) (*MaxEmvResponse, error) {
-	out := new(MaxEmvResponse)
-	err := c.cc.Invoke(ctx, "/gdean.GDeanService/MaxEmv", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *gDeanServiceClient) ReportMaxEmvResults(ctx context.Context, in *ReportRequest, opts ...grpc.CallOption) (*ReportResponse, error) {
@@ -52,7 +42,6 @@ func (c *gDeanServiceClient) ReportMaxEmvResults(ctx context.Context, in *Report
 // All implementations must embed UnimplementedGDeanServiceServer
 // for forward compatibility
 type GDeanServiceServer interface {
-	MaxEmv(context.Context, *MaxEmvRequest) (*MaxEmvResponse, error)
 	ReportMaxEmvResults(context.Context, *ReportRequest) (*ReportResponse, error)
 	mustEmbedUnimplementedGDeanServiceServer()
 }
@@ -61,9 +50,6 @@ type GDeanServiceServer interface {
 type UnimplementedGDeanServiceServer struct {
 }
 
-func (UnimplementedGDeanServiceServer) MaxEmv(context.Context, *MaxEmvRequest) (*MaxEmvResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MaxEmv not implemented")
-}
 func (UnimplementedGDeanServiceServer) ReportMaxEmvResults(context.Context, *ReportRequest) (*ReportResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportMaxEmvResults not implemented")
 }
@@ -78,24 +64,6 @@ type UnsafeGDeanServiceServer interface {
 
 func RegisterGDeanServiceServer(s grpc.ServiceRegistrar, srv GDeanServiceServer) {
 	s.RegisterService(&GDeanService_ServiceDesc, srv)
-}
-
-func _GDeanService_MaxEmv_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MaxEmvRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GDeanServiceServer).MaxEmv(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gdean.GDeanService/MaxEmv",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GDeanServiceServer).MaxEmv(ctx, req.(*MaxEmvRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _GDeanService_ReportMaxEmvResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -124,14 +92,10 @@ var GDeanService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GDeanServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "MaxEmv",
-			Handler:    _GDeanService_MaxEmv_Handler,
-		},
-		{
 			MethodName: "ReportMaxEmvResults",
 			Handler:    _GDeanService_ReportMaxEmvResults_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pb/gdean.proto",
+	Metadata: "gdean.proto",
 }
