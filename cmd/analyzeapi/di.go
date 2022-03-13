@@ -22,8 +22,8 @@ func initializeServerWithRepo(ctx context.Context) *s.ServerWithRepo {
 func initializeAnalyzeServerWithRepo(ctx context.Context) *s.AnalyzeServer {
 	wire.Build(
 		s.DefaultSqliteAnalyzeConnInfo,
-		s.DefaultAnalyzeServiceServer,
-		s.AnalyzeServerWithSqliteRepo,
+		s.NewSqliteAnalyzeRepository, wire.Bind(new(s.AnalyzeRepository), new(*s.SqliteAnalyzeRepository)),
+		s.DefaultAnalyzeServerWithRepo,
 	)
 	return &s.AnalyzeServer{}
 }

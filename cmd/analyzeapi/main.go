@@ -31,7 +31,7 @@ func main() {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	asvs := initializeAnalyzeServerWithRepo(ctx)
 	server := grpc.NewServer()
-	pb.RegisterAnalyzeServiceServer(server, asvs.Server)
+	pb.RegisterAnalyzeServiceServer(server, asvs)
 	log.Info().Int("port", c.Port).Msg("setup finished")
 
 	server.Serve(listenPort)

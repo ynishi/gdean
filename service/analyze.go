@@ -15,26 +15,20 @@ import (
 
 // server impl
 type AnalyzeServer struct {
-	Server *AnalyzeServiceServer
-	Repo   AnalyzeRepository
-}
-
-type AnalyzeServiceServer struct {
 	pb.AnalyzeServiceServer
+	Repo AnalyzeRepository
 }
 
-func DefaultAnalyzeServiceServer() *AnalyzeServiceServer {
-	return &AnalyzeServiceServer{}
-
+func DefaultAnalyzeServiceServer() *AnalyzeServer {
+	return &AnalyzeServer{}
 }
 
 // constructors for server
-func AnalyzeServerWithSqliteRepo(ctx context.Context, server *AnalyzeServiceServer, info *SqliteAnalyzeConnInfo) *AnalyzeServer {
-	return DefaultAnalyzeServerWithRepo(ctx, server, NewSqliteAnalyzeRepository(info))
-}
-
-func DefaultAnalyzeServerWithRepo(ctx context.Context, server *AnalyzeServiceServer, repo AnalyzeRepository) *AnalyzeServer {
-	return &AnalyzeServer{Server: server, Repo: repo}
+func DefaultAnalyzeServerWithRepo(ctx context.Context, repo AnalyzeRepository) *AnalyzeServer {
+	server := DefaultAnalyzeServiceServer()
+	repo.Init()
+	server.Repo = repo
+	return server
 }
 
 // internal domain(model) compatible with rdb
@@ -49,6 +43,7 @@ type Meta struct {
 // TODO: consider to refactor Repository, simplifly management DB inject.
 // repository
 type AnalyzeRepository interface {
+	Init() error
 	Fetch(id uint32) (*pb.Meta, error)
 	Create(*pb.MetaBody) (*pb.Meta, error)
 	Put(uint32, *pb.MetaBody) (*pb.Meta, error)
