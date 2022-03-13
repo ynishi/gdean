@@ -3,26 +3,37 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	pb "github.com/ynishi/gdean/pb"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 // server impl
 type AnalyzeServer struct {
-	Server pb.AnalyzeServiceServer
+	Server *AnalyzeServiceServer
 	Repo   AnalyzeRepository
 }
 
+type AnalyzeServiceServer struct {
+	pb.AnalyzeServiceServer
+}
+
+func DefaultAnalyzeServiceServer() *AnalyzeServiceServer {
+	return &AnalyzeServiceServer{}
+
+}
+
 // constructors for server
-func AnalyzeServerWithSqliteRepo(ctx context.Context, server pb.AnalyzeServiceServer, info string) *AnalyzeServer {
+func AnalyzeServerWithSqliteRepo(ctx context.Context, server *AnalyzeServiceServer, info *SqliteAnalyzeConnInfo) *AnalyzeServer {
 	return DefaultAnalyzeServerWithRepo(ctx, server, NewSqliteAnalyzeRepository(info))
 }
 
-func DefaultAnalyzeServerWithRepo(ctx context.Context, server pb.AnalyzeServiceServer, repo AnalyzeRepository) *AnalyzeServer {
+func DefaultAnalyzeServerWithRepo(ctx context.Context, server *AnalyzeServiceServer, repo AnalyzeRepository) *AnalyzeServer {
 	return &AnalyzeServer{Server: server, Repo: repo}
 }
 
@@ -35,6 +46,8 @@ type Meta struct {
 	ParamDef    string `gorm:"column:param_def"`
 }
 
+// TODO: consider to refactor Repository, simplifly management DB inject.
+// repository
 type AnalyzeRepository interface {
 	Fetch(id uint32) (*pb.Meta, error)
 	Create(*pb.MetaBody) (*pb.Meta, error)
@@ -53,20 +66,6 @@ type DefaultAnalyzeRepository struct {
 	DBGetter AnalyzeDBGetter
 }
 
-// embedded Default(expext to injecte sqlite conn)
-type SqliteAnalyzeRepository struct {
-	*DefaultAnalyzeRepository
-}
-
-// has conn info struct work with sqlite repository
-type SqlteDBGetter struct {
-	Info string
-}
-
-func NewSqliteAnalyzeRepository(info string) *SqliteAnalyzeRepository {
-	return &SqliteAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &SqlteDBGetter{Info: info}}}
-}
-
 func (s *DefaultAnalyzeRepository) Init() error {
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
@@ -76,17 +75,15 @@ func (s *DefaultAnalyzeRepository) Init() error {
 	return nil
 }
 
-func (s *SqlteDBGetter) GetDB() (*gorm.DB, error) {
-	return gorm.Open(sqlite.Open(s.Info), &gorm.Config{})
-}
-
 func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
 	db, err := s.DBGetter.GetDB()
 	if err != nil {
 		return nil, err
 	}
 	var meta Meta
-	db.First(&meta, id)
+	if err := db.First(&meta, id).Error; err != nil {
+		return nil, err
+	}
 	pbMeta, err := toPBMeta(&meta)
 	if err != nil {
 		return nil, err
@@ -105,7 +102,7 @@ func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, erro
 	}
 	res := db.Create(meta)
 	if res.Error != nil {
-		return nil, err
+		return nil, res.Error
 	}
 	pbMeta, err := toPBMeta(meta)
 	if err != nil {
@@ -206,7 +203,6 @@ func (s *AnalyzeServer) DeleteMeta(ctx context.Context, in *pb.DeleteMetaRequest
 	return &pb.DeleteMetaResponse{Response: &pb.DeleteMetaResponse_DeleteTime{meta.UpdateTime}}, nil
 }
 
-// TODO
 func (s *AnalyzeServer) GetMetaList(ctx context.Context, in *pb.GetMetaListRequest) (*pb.GetMetaListResponse, error) {
 	ids, err := s.Repo.FetchFrom(in.StartId)
 	if err != nil {
@@ -218,6 +214,64 @@ func (s *AnalyzeServer) GetMetaList(ctx context.Context, in *pb.GetMetaListReque
 // TODO
 func (s *AnalyzeServer) GetMetrics(ctx context.Context, in *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
 	return nil, nil
+}
+
+// Repository implementation for rdb
+// Sqlite Repoitory
+// embedded Default(expext to injecte sqlite conn)
+type SqliteAnalyzeRepository struct {
+	*DefaultAnalyzeRepository
+}
+
+type SqliteAnalyzeConnInfo string
+
+// has conn info struct work with sqlite repository
+type SqlteDBGetter struct {
+	Info SqliteAnalyzeConnInfo
+}
+
+// impl for GetDB abstruct func
+func (s *SqlteDBGetter) GetDB() (*gorm.DB, error) {
+	return gorm.Open(sqlite.Open(string(s.Info)), &gorm.Config{})
+}
+
+func DefaultSqliteAnalyzeConnInfo() *SqliteAnalyzeConnInfo {
+	var v SqliteAnalyzeConnInfo = "analyze.db"
+	return &v
+}
+
+// constructor for sqlite
+func NewSqliteAnalyzeRepository(info *SqliteAnalyzeConnInfo) *SqliteAnalyzeRepository {
+	return &SqliteAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &SqlteDBGetter{Info: *info}}}
+}
+
+// Mysql Repostitory
+type MysqlAnalyzeRepository struct {
+	*DefaultAnalyzeRepository
+}
+
+// mysql conn info for Repository
+type MysqlDBGetter struct {
+	User     string
+	Password string
+	Host     string
+	Port     uint
+	DbName   string
+}
+
+// impl for GetDB abstruct func
+func (s *MysqlDBGetter) GetDB() (*gorm.DB, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", s.User, s.Password, s.Host, s.Port, s.DbName)
+	return gorm.Open(mysql.Open(dsn), &gorm.Config{})
+}
+
+// constructor for mysql
+func NewMysqlAnalyzeRepository(user, password, host, dbname string, port uint) *MysqlAnalyzeRepository {
+	var dport uint = 3306
+	if port == 0 {
+		dport = port
+	}
+	return &MysqlAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &MysqlDBGetter{User: user, Password: password, Host: host, Port: dport, DbName: dbname}}}
 }
 
 // helper converters
