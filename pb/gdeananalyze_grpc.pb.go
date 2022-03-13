@@ -24,6 +24,7 @@ type AnalyzeServiceClient interface {
 	DeleteMeta(ctx context.Context, in *DeleteMetaRequest, opts ...grpc.CallOption) (*DeleteMetaResponse, error)
 	GetMetaList(ctx context.Context, in *GetMetaListRequest, opts ...grpc.CallOption) (*GetMetaListResponse, error)
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
+	MaxEmv(ctx context.Context, in *MaxEmvRequest, opts ...grpc.CallOption) (*MaxEmvResponse, error)
 }
 
 type analyzeServiceClient struct {
@@ -88,6 +89,15 @@ func (c *analyzeServiceClient) GetMetrics(ctx context.Context, in *GetMetricsReq
 	return out, nil
 }
 
+func (c *analyzeServiceClient) MaxEmv(ctx context.Context, in *MaxEmvRequest, opts ...grpc.CallOption) (*MaxEmvResponse, error) {
+	out := new(MaxEmvResponse)
+	err := c.cc.Invoke(ctx, "/gdean.AnalyzeService/MaxEmv", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AnalyzeServiceServer is the server API for AnalyzeService service.
 // All implementations must embed UnimplementedAnalyzeServiceServer
 // for forward compatibility
@@ -98,6 +108,7 @@ type AnalyzeServiceServer interface {
 	DeleteMeta(context.Context, *DeleteMetaRequest) (*DeleteMetaResponse, error)
 	GetMetaList(context.Context, *GetMetaListRequest) (*GetMetaListResponse, error)
 	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
+	MaxEmv(context.Context, *MaxEmvRequest) (*MaxEmvResponse, error)
 	mustEmbedUnimplementedAnalyzeServiceServer()
 }
 
@@ -122,6 +133,9 @@ func (UnimplementedAnalyzeServiceServer) GetMetaList(context.Context, *GetMetaLi
 }
 func (UnimplementedAnalyzeServiceServer) GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetrics not implemented")
+}
+func (UnimplementedAnalyzeServiceServer) MaxEmv(context.Context, *MaxEmvRequest) (*MaxEmvResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MaxEmv not implemented")
 }
 func (UnimplementedAnalyzeServiceServer) mustEmbedUnimplementedAnalyzeServiceServer() {}
 
@@ -244,6 +258,24 @@ func _AnalyzeService_GetMetrics_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyzeService_MaxEmv_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaxEmvRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyzeServiceServer).MaxEmv(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.AnalyzeService/MaxEmv",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyzeServiceServer).MaxEmv(ctx, req.(*MaxEmvRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AnalyzeService_ServiceDesc is the grpc.ServiceDesc for AnalyzeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +306,10 @@ var AnalyzeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMetrics",
 			Handler:    _AnalyzeService_GetMetrics_Handler,
+		},
+		{
+			MethodName: "MaxEmv",
+			Handler:    _AnalyzeService_MaxEmv_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

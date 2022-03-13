@@ -27,3 +27,12 @@ func initializeAnalyzeServerWithRepo(ctx context.Context) *s.AnalyzeServer {
 	)
 	return &s.AnalyzeServer{}
 }
+
+func initializeAnalyzeServerWithMysqlRepo(ctx context.Context) *s.AnalyzeServer {
+	wire.Build(
+		s.DefaultMysqlAnalyzeConnInfo,
+		s.NewMysqlAnalyzeRepository, wire.Bind(new(s.AnalyzeRepository), new(*s.MysqlAnalyzeRepository)),
+		s.DefaultAnalyzeServerWithRepo,
+	)
+	return &s.AnalyzeServer{}
+}

@@ -30,6 +30,7 @@ func main() {
 
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	asvs := initializeAnalyzeServerWithRepo(ctx)
+	//asvs := initializeAnalyzeServerWithMysqlRepo(ctx)
 	server := grpc.NewServer()
 	pb.RegisterAnalyzeServiceServer(server, asvs)
 	log.Info().Int("port", c.Port).Msg("setup finished")

@@ -13,6 +13,10 @@ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=p
 cd cmd/{api,analyzeapi...}
 wire
 ```
+### docker
+```
+docker build -t gdean-analyze -f Dockerfile.analyze .
+```
 ## run server
 ```
 source calc/venv/bin/activate

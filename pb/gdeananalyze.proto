@@ -15,6 +15,8 @@ service AnalyzeService {
   rpc DeleteMeta(DeleteMetaRequest) returns(DeleteMetaResponse) {}
   rpc GetMetaList(GetMetaListRequest) returns(GetMetaListResponse) {}
   rpc GetMetrics(GetMetricsRequest) returns(GetMetricsResponse) {}
+
+  rpc MaxEmv(MaxEmvRequest) returns(MaxEmvResponse) {}
 }
 
 message Metrics {
@@ -84,4 +86,16 @@ message GetMetaListResponse {
     GetMetaListIds ids = 1;
     google.rpc.Status status = 2;
   }
+}
+
+message MaxEmvRequest { TowPData towPData = 1; }
+message MaxEmvResponse {
+  int32 maxEmv = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
+
+message TowPData {
+  float p1 = 1; // p2 = 1 - p1
+  repeated int32 dataP1 = 2;
+  repeated int32 dataP2 = 3;
 }

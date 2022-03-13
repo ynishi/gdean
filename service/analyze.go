@@ -3,11 +3,14 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/rs/zerolog/log"
+	"github.com/thanos-io/thanos/pkg/runutil"
 	pb "github.com/ynishi/gdean/pb"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -32,166 +35,8 @@ func DefaultAnalyzeServerWithRepo(ctx context.Context, repo AnalyzeRepository) *
 	return server
 }
 
-// internal domain(model) compatible with rdb
-type Meta struct {
-	gorm.Model
-	Name        string
-	Desc        string
-	IsAvailable bool   `gorm:"column:is_available"`
-	ParamDef    string `gorm:"column:param_def"`
-}
-
-// TODO: consider to refactor Repository, simplifly management DB inject.
-// repository
-type AnalyzeRepository interface {
-	Init() error
-	Fetch(id uint32) (*pb.Meta, error)
-	Create(*pb.MetaBody) (*pb.Meta, error)
-	Put(uint32, *pb.MetaBody) (*pb.Meta, error)
-	Delete(uint32) (*pb.Meta, error)
-	FetchFrom(uint32) ([]uint32, error)
-}
-
-// to inject db conn to repository
-type AnalyzeDBGetter interface {
-	GetDB() (*gorm.DB, error)
-}
-
-// to default func definition injectable conn
-type DefaultAnalyzeRepository struct {
-	DBGetter AnalyzeDBGetter
-	Cache    *lru.Cache
-}
-
-func (s *DefaultAnalyzeRepository) Init() error {
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return err
-	}
-	db.AutoMigrate(&Meta{})
-	cache, err := lru.New(128)
-	if err != nil {
-		return err
-	}
-	s.Cache = cache
-	return nil
-}
-
-func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
-	if s.Cache != nil {
-		if v, ok := s.Cache.Get(id); ok {
-			var meta = v.(pb.Meta)
-			return &meta, nil
-		}
-	}
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return nil, err
-	}
-	var meta Meta
-	if err := db.First(&meta, id).Error; err != nil {
-		return nil, err
-	}
-	pbMeta, err := toPBMeta(&meta)
-	if err != nil {
-		return nil, err
-	}
-	if s.Cache != nil {
-		s.Cache.Add(id, pbMeta)
-	}
-	return pbMeta, nil
-}
-
-func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, error) {
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return nil, err
-	}
-	meta, err := fromPBMetaBody(metaBody)
-	if err != nil {
-		return nil, err
-	}
-	res := db.Create(meta)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	pbMeta, err := toPBMeta(meta)
-	if err != nil {
-		return nil, err
-	}
-	if s.Cache != nil {
-		s.Cache.Add(pbMeta.Id, pbMeta)
-	}
-	return pbMeta, nil
-}
-
-func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Meta, error) {
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return nil, err
-	}
-	paramDef, err := json.Marshal(metaBody.ParamDef)
-	if err != nil {
-		return nil, err
-	}
-	now := time.Now()
-	var meta Meta
-	db.First(&meta, id)
-	meta.Name = metaBody.Name
-	meta.Desc = metaBody.Desc
-	meta.IsAvailable = metaBody.IsAvailable
-	meta.ParamDef = string(paramDef)
-	meta.UpdatedAt = now
-	res := db.Save(&meta)
-	if res.Error != nil {
-		return nil, err
-	}
-	pbMeta, err := toPBMeta(&meta)
-	if err != nil {
-		return nil, err
-	}
-	if s.Cache != nil {
-		s.Cache.Add(id, pbMeta)
-	}
-	return pbMeta, nil
-}
-
-func (s *DefaultAnalyzeRepository) Delete(id uint32) (*pb.Meta, error) {
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return nil, err
-	}
-	var meta Meta
-	db.First(&meta, id)
-	res := db.Delete(&meta)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	pbMeta, err := toPBMeta(&meta)
-	if err != nil {
-		return nil, err
-	}
-	if s.Cache != nil {
-		s.Cache.Remove(id)
-	}
-	return pbMeta, nil
-}
-
-func (s *DefaultAnalyzeRepository) FetchFrom(id uint32) ([]uint32, error) {
-	db, err := s.DBGetter.GetDB()
-	if err != nil {
-		return nil, err
-	}
-	metas := make([]Meta, 10)
-	db.Limit(10).Find(&metas)
-	var acc []uint32
-	for _, meta := range metas {
-		acc = append(acc, uint32(meta.ID))
-	}
-	return acc, nil
-}
-
-func (s *AnalyzeServer) GetMeta(ctx context.Context, in *pb.GetMetaRequest) (*pb.GetMetaResponse, error) {
+// impl for GRPC interface
+func (s *AnalyzeServer) GetMeta(ctx context.Context, in *pb.GetMetaRequest) (res *pb.GetMetaResponse, err error) {
 	meta, err := s.Repo.Fetch(in.Id)
 	if err != nil {
 		return nil, err
@@ -236,6 +81,230 @@ func (s *AnalyzeServer) GetMetrics(ctx context.Context, in *pb.GetMetricsRequest
 	return nil, nil
 }
 
+func (s *AnalyzeServer) MaxEmv(ctx context.Context, in *pb.MaxEmvRequest) (*pb.MaxEmvResponse, error) {
+	log.Debug().Float32("p1", float32(in.GetTowPData().GetP1())).Msg("Recieved")
+	maxEmv, err := calcMaxEmv(in.GetTowPData().GetP1(), in.GetTowPData().GetDataP1(), in.GetTowPData().GetDataP2())
+	if err != nil {
+		return nil, err
+	}
+	ct, err := ptypes.TimestampProto(time.Now())
+	if err != nil {
+		return nil, err
+	}
+	result := pb.Result{MaxEmv: maxEmv, CreateTime: ct}
+	return &pb.MaxEmvResponse{MaxEmv: result.MaxEmv, CreateTime: result.CreateTime}, nil
+}
+
+// internal domain(model) compatible with rdb
+type Meta struct {
+	gorm.Model
+	Name        string
+	Desc        string
+	IsAvailable bool   `gorm:"column:is_available"`
+	ParamDef    string `gorm:"column:param_def"`
+}
+
+// TODO: consider to refactor Repository, simplifly management DB inject or remove Repository interface(this interface can used when change to not rdb)
+// repository
+type AnalyzeRepository interface {
+	Init() error
+	Fetch(id uint32) (*pb.Meta, error)
+	Create(*pb.MetaBody) (*pb.Meta, error)
+	Put(uint32, *pb.MetaBody) (*pb.Meta, error)
+	Delete(uint32) (*pb.Meta, error)
+	FetchFrom(uint32) ([]uint32, error)
+}
+
+// to inject db conn to repository
+type AnalyzeDBGetter interface {
+	GetDB() (*gorm.DB, error)
+}
+
+// to default func definition injectable conn
+type DefaultAnalyzeRepository struct {
+	DBGetter AnalyzeDBGetter
+	Cache    *lru.Cache
+}
+
+func (s *DefaultAnalyzeRepository) Init() (err error) {
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return err
+	}
+	dbx, err := db.DB()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			runutil.CloseWithErrCapture(&err, dbx, "close conn")
+		}
+	}()
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		return db.AutoMigrate(&Meta{})
+	})
+	if err != nil {
+		return err
+	}
+	cache, err := lru.New(128)
+	if err != nil {
+		return err
+	}
+	s.Cache = cache
+	return nil
+}
+
+func (s *DefaultAnalyzeRepository) Fetch(id uint32) (*pb.Meta, error) {
+	if s.Cache != nil {
+		if v, ok := s.Cache.Get(id); ok {
+			var meta = v.(pb.Meta)
+			return &meta, nil
+		}
+	}
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	var meta Meta
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		return db.First(&meta, id).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	pbMeta, err := toPBMeta(&meta)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Add(id, pbMeta)
+	}
+	return pbMeta, nil
+}
+
+func (s *DefaultAnalyzeRepository) Create(metaBody *pb.MetaBody) (*pb.Meta, error) {
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	meta, err := fromPBMetaBody(metaBody)
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Create(meta).Error; err != nil {
+		return nil, err
+	}
+	pbMeta, err := toPBMeta(meta)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Add(pbMeta.Id, pbMeta)
+	}
+	return pbMeta, nil
+}
+
+func (s *DefaultAnalyzeRepository) Put(id uint32, metaBody *pb.MetaBody) (*pb.Meta, error) {
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	paramDef, err := json.Marshal(metaBody.ParamDef)
+	if err != nil {
+		return nil, err
+	}
+	var meta Meta
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		return db.First(&meta, id).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	meta.Name = metaBody.Name
+	meta.Desc = metaBody.Desc
+	meta.IsAvailable = metaBody.IsAvailable
+	meta.ParamDef = string(paramDef)
+	meta.UpdatedAt = time.Now()
+	ctxSave, cancelSave := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancelSave()
+	err = runutil.Retry(5*time.Second, ctxSave.Done(), func() error {
+		return db.Save(&meta).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	pbMeta, err := toPBMeta(&meta)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Add(id, pbMeta)
+	}
+	return pbMeta, nil
+}
+
+func (s *DefaultAnalyzeRepository) Delete(id uint32) (*pb.Meta, error) {
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	var meta Meta
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		return db.First(&meta, id).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	ctxDel, cancelDel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancelDel()
+	err = runutil.Retry(5*time.Second, ctxDel.Done(), func() error {
+		return db.Delete(&meta).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	pbMeta, err := toPBMeta(&meta)
+	if err != nil {
+		return nil, err
+	}
+	if s.Cache != nil {
+		s.Cache.Remove(id)
+	}
+	return pbMeta, nil
+}
+
+func (s *DefaultAnalyzeRepository) FetchFrom(id uint32) ([]uint32, error) {
+	lm := 10
+	db, err := s.DBGetter.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	metas := make([]Meta, lm)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	var res *gorm.DB
+	err = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		res = db.Limit(lm).Find(&metas)
+		return res.Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]uint32, res.RowsAffected)
+	for i, meta := range metas {
+		ids[i] = uint32(meta.ID)
+	}
+	return ids, nil
+}
+
 // Repository implementation for rdb
 // Sqlite Repoitory
 // embedded Default(expext to injecte sqlite conn)
@@ -271,37 +340,70 @@ type MysqlAnalyzeRepository struct {
 }
 
 // mysql conn info for Repository
-type MysqlDBGetter struct {
+type MysqlConnInfo struct {
 	User     string
 	Password string
 	Host     string
 	Port     uint
 	DbName   string
 }
+type MysqlDBGetter struct {
+	Info *MysqlConnInfo
+}
 
 // impl for GetDB abstruct func
 func (s *MysqlDBGetter) GetDB() (*gorm.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", s.User, s.Password, s.Host, s.Port, s.DbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", s.Info.User, s.Info.Password, s.Info.Host, s.Info.Port, s.Info.DbName)
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{})
 }
 
-// constructor for mysql
-func NewMysqlAnalyzeRepository(user, password, host, dbname string, port uint) *MysqlAnalyzeRepository {
-	var dport uint = 3306
-	if port == 0 {
-		dport = port
+func DefaultMysqlAnalyzeConnInfo() *MysqlConnInfo {
+	var host = "localhost"
+	if cfg.MysqlHost != "" {
+		host = cfg.MysqlHost
 	}
-	return &MysqlAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &MysqlDBGetter{User: user, Password: password, Host: host, Port: dport, DbName: dbname}}}
+	var user = "analyze"
+	if cfg.MysqlUser != "" {
+		user = cfg.MysqlUser
+	}
+	var password = "password"
+	if cfg.MysqlPassword != "" {
+		password = cfg.MysqlPassword
+	}
+	var dbname = "analyze"
+	if cfg.MysqlDbName != "" {
+		dbname = cfg.MysqlDbName
+	}
+	var port uint = 3306
+	if cfg.MysqlPort > 0 {
+		port = cfg.MysqlPort
+	}
+
+	return &MysqlConnInfo{
+		User:     user,
+		Password: password,
+		Host:     host,
+		Port:     port,
+		DbName:   dbname,
+	}
 }
+
+// constructor for mysql
+func NewMysqlAnalyzeRepository(info *MysqlConnInfo) *MysqlAnalyzeRepository {
+	return &MysqlAnalyzeRepository{DefaultAnalyzeRepository: &DefaultAnalyzeRepository{DBGetter: &MysqlDBGetter{Info: info}}}
+}
+
+var ErrNilInput = errors.New("nil in input")
 
 // helper converters
 func toPBMeta(meta *Meta) (*pb.Meta, error) {
+	if meta == nil {
+		return nil, ErrNilInput
+	}
 	var paramDef map[string]string
-	err := json.Unmarshal([]byte(meta.ParamDef), &paramDef)
-	if err != nil {
+	if err := json.Unmarshal([]byte(meta.ParamDef), &paramDef); err != nil {
 		return nil, err
 	}
-	metaBody := pb.MetaBody{Name: meta.Name, Desc: meta.Desc, ParamDef: paramDef, IsAvailable: meta.IsAvailable}
 	ct, err := ptypes.TimestampProto(meta.CreatedAt)
 	if err != nil {
 		return nil, err
@@ -310,10 +412,13 @@ func toPBMeta(meta *Meta) (*pb.Meta, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Meta{Id: uint32(meta.ID), MetaBody: &metaBody, CreateTime: ct, UpdateTime: ut}, nil
+	return &pb.Meta{Id: uint32(meta.ID), MetaBody: &pb.MetaBody{Name: meta.Name, Desc: meta.Desc, ParamDef: paramDef, IsAvailable: meta.IsAvailable}, CreateTime: ct, UpdateTime: ut}, nil
 }
 
 func fromPBMetaBody(metaBody *pb.MetaBody) (*Meta, error) {
+	if metaBody == nil {
+		return nil, ErrNilInput
+	}
 	paramDef, err := json.Marshal(metaBody.ParamDef)
 	if err != nil {
 		return nil, err

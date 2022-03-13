@@ -27,3 +27,10 @@ func initializeAnalyzeServerWithRepo(ctx context.Context) *service.AnalyzeServer
 	analyzeServer := service.DefaultAnalyzeServerWithRepo(ctx, sqliteAnalyzeRepository)
 	return analyzeServer
 }
+
+func initializeAnalyzeServerWithMysqlRepo(ctx context.Context) *service.AnalyzeServer {
+	mysqlConnInfo := service.DefaultMysqlAnalyzeConnInfo()
+	mysqlAnalyzeRepository := service.NewMysqlAnalyzeRepository(mysqlConnInfo)
+	analyzeServer := service.DefaultAnalyzeServerWithRepo(ctx, mysqlAnalyzeRepository)
+	return analyzeServer
+}

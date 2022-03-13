@@ -13,7 +13,7 @@ var DialInfo = "localhost:50051"
 func MaxEmv(p1 float32, d1 []int32, d2 []int32) int32 {
 	conn, _ := grpc.Dial(DialInfo, grpc.WithInsecure())
 	defer conn.Close()
-	c := pb.NewGDeanServiceClient(conn)
+	c := pb.NewAnalyzeServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -29,8 +29,8 @@ func MaxEmv(p1 float32, d1 []int32, d2 []int32) int32 {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("got emv:" + emv.GetResult().String())
-	return emv.GetResult().GetMaxEmv()
+	fmt.Printf("got emv:%d", emv.GetMaxEmv())
+	return emv.GetMaxEmv()
 }
 
 func ReportMaxEmvResults() *pb.Report {
