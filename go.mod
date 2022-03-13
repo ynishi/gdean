@@ -3,8 +3,10 @@ module github.com/ynishi/gdean
 go 1.17
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/wire v0.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -34,6 +36,7 @@ require (
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gorm.io/driver/mysql v1.3.2 // indirect
 	gorm.io/driver/sqlite v1.3.1 // indirect
 	gorm.io/gorm v1.23.1 // indirect
 )
