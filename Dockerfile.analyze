@@ -1,0 +1,23 @@
+FROM golang:1.17 as builder
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+WORKDIR /go/gdean
+
+COPY go.mod go.sum ./ 
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -ldflags "-s -w" -o analyze-app cmd/analyzeapi/main.go cmd/analyzeapi/wire_gen.go
+
+
+FROM alpine:latest 
+
+RUN apk add sqlite-libs
+
+COPY --from=builder /go/gdean/analyze-app /analyze-app
+COPY --from=builder /go/gdean/config /config
+CMD ["/analyze-app"]
