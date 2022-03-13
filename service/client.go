@@ -44,3 +44,17 @@ func ReportMaxEmvResults() *pb.Report {
 	r, _ := c.ReportMaxEmvResults(ctx, &pb.ReportRequest{})
 	return r.GetReport()
 }
+
+func CreateMeta(name, desc string, isAvailable bool, paramDef map[string]string) *pb.CreateMetaResponse {
+	conn, _ := grpc.Dial(DialInfo, grpc.WithInsecure())
+	defer conn.Close()
+	c := pb.NewAnalyzeServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	req := pb.CreateMetaRequest{}
+	req.MetaBody = &pb.MetaBody{Name: name, Desc: desc, IsAvailable: isAvailable, ParamDef: paramDef}
+	r, _ := c.CreateMeta(ctx, &req)
+	return r
+}
