@@ -1,0 +1,126 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/ynishi/gdean";
+
+package gdean;
+import "google/protobuf/timestamp.proto";
+
+service IssueService {
+  rpc CreateIssue(CreateIssueRequest) returns(CreateIssueResponse) {}
+  rpc PutIssue(PutIssueRequest) returns(PutIssueResponse) {}
+  rpc GetIssue(GetIssueRequest) returns(GetIssueResponse) {}
+  rpc DeleteIssue(DeleteIssueRequest) returns(DeleteIssueResponse) {}
+  rpc CreateComment(CreateCommentRequest) returns(CreateCommentResponse) {}
+  rpc PutComment(PutCommentRequest) returns(PutCommentResponse) {}
+  rpc GetComment(GetCommentRequest) returns(GetCommentResponse) {}
+  rpc DeleteComment(DeleteCommentRequest) returns(DeleteCommentResponse) {}
+  rpc CreateData(CreateDataRequest) returns(CreateDataResponse) {}
+  rpc PutData(PutDataRequest) returns(PutDataResponse) {}
+  rpc GetData(GetDataRequest) returns(GetDataResponse) {}
+  rpc DeleteData(DeleteDataRequest) returns(DeleteDataResponse) {}
+  rpc DecideBranch(DecideBranchRequest) returns(DecideBranchResponse) {}
+}
+
+message Issue {
+  uint32 id = 1;
+  string title = 2;
+  string desc = 3;
+  User author = 4;
+  repeated User contributers = 5;
+  repeated Branch branches = 6;
+  repeated Comment comments = 7;
+  repeated Data data = 8;
+  repeated AnalyzedResult results = 9;
+  Branch decided_branch = 10;
+  User operator= 11;
+  google.protobuf.Timestamp create_time = 12;
+  google.protobuf.Timestamp update_time = 13;
+  google.protobuf.Timestamp delete_time = 14;
+}
+
+message User {
+  uint32 id = 1;
+  string name = 2;
+  google.protobuf.Timestamp create_time = 3;
+  google.protobuf.Timestamp update_time = 4;
+  google.protobuf.Timestamp delete_time = 5;
+}
+
+message Branch {
+  uint32 id = 1;
+  string content = 2;
+  repeated string descs = 3;
+  repeated float params = 5;
+  User operator= 6;
+  google.protobuf.Timestamp create_time = 7;
+  google.protobuf.Timestamp update_time = 8;
+  google.protobuf.Timestamp delete_time = 9;
+}
+
+message Comment {
+  uint32 id = 1;
+  uint32 issue_id = 2;
+  User author = 3;
+  string content = 4;
+  string key = 5;
+  google.protobuf.Timestamp create_time = 6;
+  google.protobuf.Timestamp update_time = 7;
+  google.protobuf.Timestamp delete_time = 8;
+}
+
+message Data {
+  uint32 id = 1;
+  uint32 issue_id = 2;
+  repeated string columns = 3;
+  repeated string indexes = 4;
+  repeated float params = 5;
+  uint32 length = 6;
+  User operator= 7;
+  google.protobuf.Timestamp create_time = 8;
+  google.protobuf.Timestamp update_time = 9;
+  google.protobuf.Timestamp delete_time = 10;
+}
+
+message AnalyzedResult {
+  uint32 id = 1;
+  uint32 issuse_id = 2;
+  string desc = 3;
+  repeated Branch branches = 4;
+  repeated float points = 5;
+  repeated string evaluates = 6;
+  repeated Comment comments = 7;
+  Branch decided = 8;
+  string reason = 9;
+  User operator= 10;
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  google.protobuf.Timestamp delete_time = 13;
+}
+
+message CreateIssueRequest {}
+message CreateIssueResponse {}
+message PutIssueRequest {}
+message PutIssueResponse {}
+message GetIssueRequest {}
+message GetIssueResponse {}
+message DeleteIssueRequest {}
+message DeleteIssueResponse {}
+message CreateCommentRequest {}
+message CreateCommentResponse {}
+message PutCommentRequest {}
+message PutCommentResponse {}
+message GetCommentRequest {}
+message GetCommentResponse {}
+message DeleteCommentRequest {}
+message DeleteCommentResponse {}
+message CreateDataRequest {}
+message CreateDataResponse {}
+message PutDataRequest {}
+message PutDataResponse {}
+message GetDataRequest {}
+message GetDataResponse {}
+message DeleteDataRequest {}
+message DeleteDataResponse {}
+message DecideBranchRequest {}
+message DecideBranchResponse {}
