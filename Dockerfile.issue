@@ -1,0 +1,24 @@
+FROM golang:alpine3.15 as builder
+
+RUN apk update && apk add gcc sqlite-libs musl-dev
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+WORKDIR /go/gdean
+
+COPY go.mod go.sum ./ 
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -ldflags "-s -w" -o app cmd/issueapi/main.go cmd/issueapi/wire_gen.go
+
+FROM golang:alpine3.15
+
+COPY --from=builder /go/gdean/app /app
+COPY --from=builder /go/gdean/config /go/config
+COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/ld-linux.so.1
+
+CMD ["/app"]

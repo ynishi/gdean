@@ -16,6 +16,7 @@ wire
 ### docker
 ```
 docker build -t gdean-analyze -f Dockerfile.analyze .
+docker build -t gdean-issue -f Dockerfile.issue .
 ```
 ## run server
 ```
@@ -24,7 +25,8 @@ go run cmd/api/main.go cmd/api/wire_gen.go
 ```
 or
 ```
-docker run -p 50051:50051 gdean-analyze
+docker run -p 50051:50051 -p 8080:8080 gdean-analyze
+docker run -p 50052:50051 -p 8081:8080 gdean-issue
 ```
 ## test
 ```
