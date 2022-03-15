@@ -1,0 +1,84 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+
+type Issue {
+  id: ID!
+  title: String!
+  desc: String!
+  authorName: String!
+  contributerNames: [String!]!
+  comments: [Comment!]!
+  branches: [Branch!]!
+  analysis: [Analysis!]!
+  createdAtISO: Time!
+  lastModifiedISO: String!
+}
+
+type IssueSummary {
+  id: ID!
+  title: String!
+  desc: String!
+  authorName: String!
+  memberCount: Int!
+  commentCount: Int!
+  branchCount: Int!
+  analysisCount: Int!
+  createdAt: String!
+  lastModified: String!
+}
+
+type Comment {
+  id: ID!
+  issueId: ID!
+  authorId: ID!
+  content: String!
+  createdAt: Time!
+  lastModified: Time!
+}
+
+type Branch {
+  id: ID!
+  issueId: ID!
+  title: String!
+  createdAt: Time!
+  lastModified: Time!
+}
+
+type Analysis {
+  id: ID!
+  issueId: ID!
+}
+
+type Query {
+  issues: [IssueSummary!]!
+  issue(id: ID!): Issue!
+  comments(issueId: ID!): [Comment!]!
+  branches(issueID: ID!): [Branch!]!
+}
+
+input NewIssue {
+  title: String!
+  desc: String
+  branches: [String!]
+  userId: String!
+}
+
+input NewComment {
+  userId: String!
+  content: String!
+}
+
+input PutComment {
+  id: ID!
+  userId: String!
+  content: String!
+}
+
+type Mutation {
+  createIssue(input: NewIssue!): Issue!
+  createComment(input: NewComment): Comment!
+  updateComment(input: PutComment): Comment!
+}
