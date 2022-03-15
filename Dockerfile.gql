@@ -1,0 +1,21 @@
+FROM golang:alpine3.15 as builder
+
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+WORKDIR /go/gdean/gql
+
+COPY gql/go.mod gql/go.sum ./ 
+
+RUN go mod download
+
+COPY gql .
+
+RUN go build -ldflags "-s -w" -o app
+
+FROM scratch 
+
+COPY --from=builder /go/gdean/gql/app /app
+
+CMD ["/app"]
