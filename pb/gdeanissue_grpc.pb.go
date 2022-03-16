@@ -31,6 +31,7 @@ type IssueServiceClient interface {
 	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
 	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
 	DecideBranch(ctx context.Context, in *DecideBranchRequest, opts ...grpc.CallOption) (*DecideBranchResponse, error)
+	AddAnalyzedResult(ctx context.Context, in *AddAnalyzedResultRequest, opts ...grpc.CallOption) (*AddAnalyzedResultResponse, error)
 }
 
 type issueServiceClient struct {
@@ -158,6 +159,15 @@ func (c *issueServiceClient) DecideBranch(ctx context.Context, in *DecideBranchR
 	return out, nil
 }
 
+func (c *issueServiceClient) AddAnalyzedResult(ctx context.Context, in *AddAnalyzedResultRequest, opts ...grpc.CallOption) (*AddAnalyzedResultResponse, error) {
+	out := new(AddAnalyzedResultResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/AddAnalyzedResult", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IssueServiceServer is the server API for IssueService service.
 // All implementations must embed UnimplementedIssueServiceServer
 // for forward compatibility
@@ -175,6 +185,7 @@ type IssueServiceServer interface {
 	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
 	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
 	DecideBranch(context.Context, *DecideBranchRequest) (*DecideBranchResponse, error)
+	AddAnalyzedResult(context.Context, *AddAnalyzedResultRequest) (*AddAnalyzedResultResponse, error)
 	mustEmbedUnimplementedIssueServiceServer()
 }
 
@@ -220,6 +231,9 @@ func (UnimplementedIssueServiceServer) DeleteData(context.Context, *DeleteDataRe
 }
 func (UnimplementedIssueServiceServer) DecideBranch(context.Context, *DecideBranchRequest) (*DecideBranchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecideBranch not implemented")
+}
+func (UnimplementedIssueServiceServer) AddAnalyzedResult(context.Context, *AddAnalyzedResultRequest) (*AddAnalyzedResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAnalyzedResult not implemented")
 }
 func (UnimplementedIssueServiceServer) mustEmbedUnimplementedIssueServiceServer() {}
 
@@ -468,6 +482,24 @@ func _IssueService_DecideBranch_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _IssueService_AddAnalyzedResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddAnalyzedResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).AddAnalyzedResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/AddAnalyzedResult",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).AddAnalyzedResult(ctx, req.(*AddAnalyzedResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // IssueService_ServiceDesc is the grpc.ServiceDesc for IssueService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -526,6 +558,10 @@ var IssueService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DecideBranch",
 			Handler:    _IssueService_DecideBranch_Handler,
+		},
+		{
+			MethodName: "AddAnalyzedResult",
+			Handler:    _IssueService_AddAnalyzedResult_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
