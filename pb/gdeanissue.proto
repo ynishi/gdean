@@ -20,6 +20,8 @@ service IssueService {
   rpc GetData(GetDataRequest) returns(GetDataResponse) {}
   rpc DeleteData(DeleteDataRequest) returns(DeleteDataResponse) {}
   rpc DecideBranch(DecideBranchRequest) returns(DecideBranchResponse) {}
+  rpc AddAnalyzedResult(AddAnalyzedResultRequest)
+      returns(AddAnalyzedResultResponse) {}
 }
 
 message Issue {
@@ -98,29 +100,139 @@ message AnalyzedResult {
   google.protobuf.Timestamp delete_time = 13;
 }
 
-message CreateIssueRequest {}
-message CreateIssueResponse {}
-message PutIssueRequest {}
-message PutIssueResponse {}
-message GetIssueRequest {}
-message GetIssueResponse {}
-message DeleteIssueRequest {}
-message DeleteIssueResponse {}
-message CreateCommentRequest {}
-message CreateCommentResponse {}
-message PutCommentRequest {}
-message PutCommentResponse {}
-message GetCommentRequest {}
-message GetCommentResponse {}
-message DeleteCommentRequest {}
-message DeleteCommentResponse {}
-message CreateDataRequest {}
-message CreateDataResponse {}
-message PutDataRequest {}
-message PutDataResponse {}
-message GetDataRequest {}
-message GetDataResponse {}
-message DeleteDataRequest {}
-message DeleteDataResponse {}
-message DecideBranchRequest {}
-message DecideBranchResponse {}
+message IssueInput {
+  string title = 1;
+  string desc = 2;
+  uint32 user_id = 3;
+  repeated uint32 contributer_ids = 4;
+  repeated Branch branches = 6;
+  repeated uint32 data_ids = 7;
+  uint32 decided_branch_id = 8;
+}
+
+message CreateIssueRequest {
+  IssueInput input = 1;
+  uint32 operator_id = 2;
+}
+
+message CreateIssueResponse {
+  uint32 id = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
+
+message PutIssueRequest {
+  uint32 id = 1;
+  IssueInput input = 2;
+  uint32 operator_id = 3;
+}
+
+message PutIssueResponse { google.protobuf.Timestamp update_time = 1; }
+
+message GetIssueRequest { uint32 id = 1; }
+
+message GetIssueResponse {
+  uint32 id = 1;
+  Issue issue = 2;
+}
+
+message DeleteIssueRequest { uint32 id = 1; }
+
+message DeleteIssueResponse { google.protobuf.Timestamp delete_time = 1; }
+
+message CreateCommentRequest {
+  uint32 issue_id = 1;
+  uint32 author_id = 2;
+  string content = 3;
+  string key = 4;
+}
+
+message CreateCommentResponse {
+  uint32 id = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
+
+message PutCommentRequest {
+  uint32 id = 1;
+  uint32 author_id = 2;
+  string content = 3;
+  string key = 4;
+}
+
+message PutCommentResponse { google.protobuf.Timestamp update_time = 1; }
+
+message GetCommentRequest { uint32 id = 1; }
+
+message GetCommentResponse {
+  uint32 id = 1;
+  Comment comment = 2;
+}
+
+message DeleteCommentRequest { uint32 id = 1; }
+
+message DeleteCommentResponse { google.protobuf.Timestamp delete_time = 1; }
+
+message DataInput {
+  uint32 issue_id = 1;
+  repeated string columns = 2;
+  repeated string indexes = 3;
+  repeated float params = 4;
+  uint32 length = 5;
+}
+
+message CreateDataRequest {
+  DataInput input = 1;
+  uint32 operator_id = 2;
+}
+
+message CreateDataResponse {
+  uint32 id = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
+
+message PutDataRequest {
+  uint32 id = 1;
+  DataInput input = 2;
+  uint32 operator_id = 3;
+}
+
+message PutDataResponse { google.protobuf.Timestamp update_time = 9; }
+
+message GetDataRequest { uint32 id = 1; }
+
+message GetDataResponse {
+  uint32 id = 1;
+  Data data = 2;
+}
+
+message DeleteDataRequest { uint32 id = 1; }
+
+message DeleteDataResponse { google.protobuf.Timestamp delete_time = 1; }
+
+message DecideBranchRequest {
+  uint32 id = 1;
+  uint32 operator_id = 2;
+}
+
+message DecideBranchResponse { google.protobuf.Timestamp update_time = 1; }
+
+message AnalyzedResultInput {
+  uint32 issue_id = 1;
+  string desc = 2;
+  repeated Branch branches = 3;
+  repeated float points = 4;
+  repeated string evaluates = 5;
+  repeated Comment comments = 6;
+  uint32 decieded_branch_id = 7;
+  string reason = 8;
+  User operator= 9;
+}
+
+message AddAnalyzedResultRequest {
+  AnalyzedResultInput input = 1;
+  uint32 operator= 2;
+}
+
+message AddAnalyzedResultResponse {
+  uint32 id = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
