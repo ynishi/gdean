@@ -25,7 +25,7 @@ func Build() error {
 func Protoc() error {
 	os.Chdir("pb")
 	defer os.Chdir("..")
-	for _, t := range services {
+	for _, t := range append(services, "util") {
 		target := "gdean" + t + ".proto"
 		if err := sh.Run(
 			"protoc",
@@ -33,6 +33,7 @@ func Protoc() error {
 			"--go_opt=paths=source_relative",
 			"--go-grpc_out=.",
 			"--go-grpc_opt=paths=source_relative",
+			"--experimental_allow_proto3_optional",
 			target); err != nil {
 			return err
 		}

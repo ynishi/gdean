@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option go_package = "github.com/ynishi/gdean";
+
+package gdean.util;
+
+import "google/protobuf/descriptor.proto";
+
+message ResourceOption {
+  string pattern = 1;
+  string body = 2;
+  string parent = 3;
+  string type = 4;
+  string child_type = 5;
+}
+
+extend google.protobuf.MessageOptions { ResourceOption resource = 50000; }
+extend google.protobuf.FieldOptions {
+  ResourceOption resource_reference = 50001;
+}
+
+extend google.protobuf.MethodOptions {
+  repeated string method_signature = 50000;
+}

@@ -14,22 +14,307 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
+// UserServiceClient is the client API for UserService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type UserServiceClient interface {
+	// standard resource apis for user
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	// util custom apis
+	UnDeleteUser(ctx context.Context, in *UnDeleteUserRequest, opts ...grpc.CallOption) (*UnDeleteUserResponse, error)
+}
+
+type userServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
+	out := new(CreateUserResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/GetUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error) {
+	out := new(ListUsersResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/ListUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/UpdateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
+	out := new(DeleteUserResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/DeleteUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UnDeleteUser(ctx context.Context, in *UnDeleteUserRequest, opts ...grpc.CallOption) (*UnDeleteUserResponse, error) {
+	out := new(UnDeleteUserResponse)
+	err := c.cc.Invoke(ctx, "/gdean.UserService/UnDeleteUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
+// for forward compatibility
+type UserServiceServer interface {
+	// standard resource apis for user
+	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	// util custom apis
+	UnDeleteUser(context.Context, *UnDeleteUserRequest) (*UnDeleteUserResponse, error)
+	mustEmbedUnimplementedUserServiceServer()
+}
+
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
+}
+
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) UnDeleteUser(context.Context, *UnDeleteUserRequest) (*UnDeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnDeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
+
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
+// result in compilation errors.
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
+}
+
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/ListUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/DeleteUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UnDeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnDeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UnDeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.UserService/UnDeleteUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UnDeleteUser(ctx, req.(*UnDeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "gdean.UserService",
+	HandlerType: (*UserServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _UserService_GetUser_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _UserService_ListUsers_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _UserService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _UserService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "UnDeleteUser",
+			Handler:    _UserService_UnDeleteUser_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "gdeanissue.proto",
+}
+
 // IssueServiceClient is the client API for IssueService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IssueServiceClient interface {
+	// standard resource apis for issue
+	// issue has branches, data list and comments.
+	// branches and comments are inlined(internal data type for issue) object
+	// because it has strongly related with issue even if they have id.
+	// consider custom api to get user and create or get comment for convinience,
+	// now use update or get
 	CreateIssue(ctx context.Context, in *CreateIssueRequest, opts ...grpc.CallOption) (*CreateIssueResponse, error)
-	PutIssue(ctx context.Context, in *PutIssueRequest, opts ...grpc.CallOption) (*PutIssueResponse, error)
 	GetIssue(ctx context.Context, in *GetIssueRequest, opts ...grpc.CallOption) (*GetIssueResponse, error)
+	ListIssues(ctx context.Context, in *ListIssuesRequest, opts ...grpc.CallOption) (*ListIssuesResponse, error)
+	// update operator expect in context auth data.
+	UpdateIssue(ctx context.Context, in *UpdateIssueRequest, opts ...grpc.CallOption) (*UpdateIssueResponse, error)
 	DeleteIssue(ctx context.Context, in *DeleteIssueRequest, opts ...grpc.CallOption) (*DeleteIssueResponse, error)
-	CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
-	PutComment(ctx context.Context, in *PutCommentRequest, opts ...grpc.CallOption) (*PutCommentResponse, error)
-	GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
-	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
+	// util custom apis for issue
+	ExportIssue(ctx context.Context, in *ExportIssueRequest, opts ...grpc.CallOption) (*ExportIssueResponse, error)
+	UnDeleteIssue(ctx context.Context, in *UnDeleteIssueRequest, opts ...grpc.CallOption) (*UnDeleteIssueResponse, error)
+	DeleteIssueInternal(ctx context.Context, in *DeleteIssueInternalRequest, opts ...grpc.CallOption) (*DeleteIssueInternalResponse, error)
+	UnDeleteIssueInternal(ctx context.Context, in *UnDeleteIssueInternalRequest, opts ...grpc.CallOption) (*UnDeleteIssueInternalResponse, error)
+	// standard resource apis for data, children of issue(TODO: consider to
+	// separate domain)
 	CreateData(ctx context.Context, in *CreateDataRequest, opts ...grpc.CallOption) (*CreateDataResponse, error)
-	PutData(ctx context.Context, in *PutDataRequest, opts ...grpc.CallOption) (*PutDataResponse, error)
 	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
+	ListData(ctx context.Context, in *ListDataRequest, opts ...grpc.CallOption) (*ListDataResponse, error)
+	UpdateData(ctx context.Context, in *UpdateDataRequest, opts ...grpc.CallOption) (*UpdateDataResponse, error)
 	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
+	// util custom apis for data
+	UnDeleteData(ctx context.Context, in *UnDeleteDataRequest, opts ...grpc.CallOption) (*UnDeleteDataResponse, error)
+	// custom apis
 	DecideBranch(ctx context.Context, in *DecideBranchRequest, opts ...grpc.CallOption) (*DecideBranchResponse, error)
 	AddAnalyzedResult(ctx context.Context, in *AddAnalyzedResultRequest, opts ...grpc.CallOption) (*AddAnalyzedResultResponse, error)
 }
@@ -51,18 +336,27 @@ func (c *issueServiceClient) CreateIssue(ctx context.Context, in *CreateIssueReq
 	return out, nil
 }
 
-func (c *issueServiceClient) PutIssue(ctx context.Context, in *PutIssueRequest, opts ...grpc.CallOption) (*PutIssueResponse, error) {
-	out := new(PutIssueResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/PutIssue", in, out, opts...)
+func (c *issueServiceClient) GetIssue(ctx context.Context, in *GetIssueRequest, opts ...grpc.CallOption) (*GetIssueResponse, error) {
+	out := new(GetIssueResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/GetIssue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *issueServiceClient) GetIssue(ctx context.Context, in *GetIssueRequest, opts ...grpc.CallOption) (*GetIssueResponse, error) {
-	out := new(GetIssueResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/GetIssue", in, out, opts...)
+func (c *issueServiceClient) ListIssues(ctx context.Context, in *ListIssuesRequest, opts ...grpc.CallOption) (*ListIssuesResponse, error) {
+	out := new(ListIssuesResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/ListIssues", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *issueServiceClient) UpdateIssue(ctx context.Context, in *UpdateIssueRequest, opts ...grpc.CallOption) (*UpdateIssueResponse, error) {
+	out := new(UpdateIssueResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/UpdateIssue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,36 +372,36 @@ func (c *issueServiceClient) DeleteIssue(ctx context.Context, in *DeleteIssueReq
 	return out, nil
 }
 
-func (c *issueServiceClient) CreateComment(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error) {
-	out := new(CreateCommentResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/CreateComment", in, out, opts...)
+func (c *issueServiceClient) ExportIssue(ctx context.Context, in *ExportIssueRequest, opts ...grpc.CallOption) (*ExportIssueResponse, error) {
+	out := new(ExportIssueResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/ExportIssue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *issueServiceClient) PutComment(ctx context.Context, in *PutCommentRequest, opts ...grpc.CallOption) (*PutCommentResponse, error) {
-	out := new(PutCommentResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/PutComment", in, out, opts...)
+func (c *issueServiceClient) UnDeleteIssue(ctx context.Context, in *UnDeleteIssueRequest, opts ...grpc.CallOption) (*UnDeleteIssueResponse, error) {
+	out := new(UnDeleteIssueResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/UnDeleteIssue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *issueServiceClient) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error) {
-	out := new(GetCommentResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/GetComment", in, out, opts...)
+func (c *issueServiceClient) DeleteIssueInternal(ctx context.Context, in *DeleteIssueInternalRequest, opts ...grpc.CallOption) (*DeleteIssueInternalResponse, error) {
+	out := new(DeleteIssueInternalResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/DeleteIssueInternal", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *issueServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error) {
-	out := new(DeleteCommentResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/DeleteComment", in, out, opts...)
+func (c *issueServiceClient) UnDeleteIssueInternal(ctx context.Context, in *UnDeleteIssueInternalRequest, opts ...grpc.CallOption) (*UnDeleteIssueInternalResponse, error) {
+	out := new(UnDeleteIssueInternalResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/UnDeleteIssueInternal", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,15 +417,6 @@ func (c *issueServiceClient) CreateData(ctx context.Context, in *CreateDataReque
 	return out, nil
 }
 
-func (c *issueServiceClient) PutData(ctx context.Context, in *PutDataRequest, opts ...grpc.CallOption) (*PutDataResponse, error) {
-	out := new(PutDataResponse)
-	err := c.cc.Invoke(ctx, "/gdean.IssueService/PutData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *issueServiceClient) GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error) {
 	out := new(GetDataResponse)
 	err := c.cc.Invoke(ctx, "/gdean.IssueService/GetData", in, out, opts...)
@@ -141,9 +426,36 @@ func (c *issueServiceClient) GetData(ctx context.Context, in *GetDataRequest, op
 	return out, nil
 }
 
+func (c *issueServiceClient) ListData(ctx context.Context, in *ListDataRequest, opts ...grpc.CallOption) (*ListDataResponse, error) {
+	out := new(ListDataResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/ListData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *issueServiceClient) UpdateData(ctx context.Context, in *UpdateDataRequest, opts ...grpc.CallOption) (*UpdateDataResponse, error) {
+	out := new(UpdateDataResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/UpdateData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *issueServiceClient) DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error) {
 	out := new(DeleteDataResponse)
 	err := c.cc.Invoke(ctx, "/gdean.IssueService/DeleteData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *issueServiceClient) UnDeleteData(ctx context.Context, in *UnDeleteDataRequest, opts ...grpc.CallOption) (*UnDeleteDataResponse, error) {
+	out := new(UnDeleteDataResponse)
+	err := c.cc.Invoke(ctx, "/gdean.IssueService/UnDeleteData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -172,18 +484,33 @@ func (c *issueServiceClient) AddAnalyzedResult(ctx context.Context, in *AddAnaly
 // All implementations must embed UnimplementedIssueServiceServer
 // for forward compatibility
 type IssueServiceServer interface {
+	// standard resource apis for issue
+	// issue has branches, data list and comments.
+	// branches and comments are inlined(internal data type for issue) object
+	// because it has strongly related with issue even if they have id.
+	// consider custom api to get user and create or get comment for convinience,
+	// now use update or get
 	CreateIssue(context.Context, *CreateIssueRequest) (*CreateIssueResponse, error)
-	PutIssue(context.Context, *PutIssueRequest) (*PutIssueResponse, error)
 	GetIssue(context.Context, *GetIssueRequest) (*GetIssueResponse, error)
+	ListIssues(context.Context, *ListIssuesRequest) (*ListIssuesResponse, error)
+	// update operator expect in context auth data.
+	UpdateIssue(context.Context, *UpdateIssueRequest) (*UpdateIssueResponse, error)
 	DeleteIssue(context.Context, *DeleteIssueRequest) (*DeleteIssueResponse, error)
-	CreateComment(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error)
-	PutComment(context.Context, *PutCommentRequest) (*PutCommentResponse, error)
-	GetComment(context.Context, *GetCommentRequest) (*GetCommentResponse, error)
-	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
+	// util custom apis for issue
+	ExportIssue(context.Context, *ExportIssueRequest) (*ExportIssueResponse, error)
+	UnDeleteIssue(context.Context, *UnDeleteIssueRequest) (*UnDeleteIssueResponse, error)
+	DeleteIssueInternal(context.Context, *DeleteIssueInternalRequest) (*DeleteIssueInternalResponse, error)
+	UnDeleteIssueInternal(context.Context, *UnDeleteIssueInternalRequest) (*UnDeleteIssueInternalResponse, error)
+	// standard resource apis for data, children of issue(TODO: consider to
+	// separate domain)
 	CreateData(context.Context, *CreateDataRequest) (*CreateDataResponse, error)
-	PutData(context.Context, *PutDataRequest) (*PutDataResponse, error)
 	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
+	ListData(context.Context, *ListDataRequest) (*ListDataResponse, error)
+	UpdateData(context.Context, *UpdateDataRequest) (*UpdateDataResponse, error)
 	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
+	// util custom apis for data
+	UnDeleteData(context.Context, *UnDeleteDataRequest) (*UnDeleteDataResponse, error)
+	// custom apis
 	DecideBranch(context.Context, *DecideBranchRequest) (*DecideBranchResponse, error)
 	AddAnalyzedResult(context.Context, *AddAnalyzedResultRequest) (*AddAnalyzedResultResponse, error)
 	mustEmbedUnimplementedIssueServiceServer()
@@ -196,38 +523,47 @@ type UnimplementedIssueServiceServer struct {
 func (UnimplementedIssueServiceServer) CreateIssue(context.Context, *CreateIssueRequest) (*CreateIssueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIssue not implemented")
 }
-func (UnimplementedIssueServiceServer) PutIssue(context.Context, *PutIssueRequest) (*PutIssueResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PutIssue not implemented")
-}
 func (UnimplementedIssueServiceServer) GetIssue(context.Context, *GetIssueRequest) (*GetIssueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIssue not implemented")
+}
+func (UnimplementedIssueServiceServer) ListIssues(context.Context, *ListIssuesRequest) (*ListIssuesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListIssues not implemented")
+}
+func (UnimplementedIssueServiceServer) UpdateIssue(context.Context, *UpdateIssueRequest) (*UpdateIssueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateIssue not implemented")
 }
 func (UnimplementedIssueServiceServer) DeleteIssue(context.Context, *DeleteIssueRequest) (*DeleteIssueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIssue not implemented")
 }
-func (UnimplementedIssueServiceServer) CreateComment(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateComment not implemented")
+func (UnimplementedIssueServiceServer) ExportIssue(context.Context, *ExportIssueRequest) (*ExportIssueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportIssue not implemented")
 }
-func (UnimplementedIssueServiceServer) PutComment(context.Context, *PutCommentRequest) (*PutCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PutComment not implemented")
+func (UnimplementedIssueServiceServer) UnDeleteIssue(context.Context, *UnDeleteIssueRequest) (*UnDeleteIssueResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnDeleteIssue not implemented")
 }
-func (UnimplementedIssueServiceServer) GetComment(context.Context, *GetCommentRequest) (*GetCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetComment not implemented")
+func (UnimplementedIssueServiceServer) DeleteIssueInternal(context.Context, *DeleteIssueInternalRequest) (*DeleteIssueInternalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteIssueInternal not implemented")
 }
-func (UnimplementedIssueServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
+func (UnimplementedIssueServiceServer) UnDeleteIssueInternal(context.Context, *UnDeleteIssueInternalRequest) (*UnDeleteIssueInternalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnDeleteIssueInternal not implemented")
 }
 func (UnimplementedIssueServiceServer) CreateData(context.Context, *CreateDataRequest) (*CreateDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateData not implemented")
 }
-func (UnimplementedIssueServiceServer) PutData(context.Context, *PutDataRequest) (*PutDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PutData not implemented")
-}
 func (UnimplementedIssueServiceServer) GetData(context.Context, *GetDataRequest) (*GetDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
 }
+func (UnimplementedIssueServiceServer) ListData(context.Context, *ListDataRequest) (*ListDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListData not implemented")
+}
+func (UnimplementedIssueServiceServer) UpdateData(context.Context, *UpdateDataRequest) (*UpdateDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateData not implemented")
+}
 func (UnimplementedIssueServiceServer) DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteData not implemented")
+}
+func (UnimplementedIssueServiceServer) UnDeleteData(context.Context, *UnDeleteDataRequest) (*UnDeleteDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnDeleteData not implemented")
 }
 func (UnimplementedIssueServiceServer) DecideBranch(context.Context, *DecideBranchRequest) (*DecideBranchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecideBranch not implemented")
@@ -266,24 +602,6 @@ func _IssueService_CreateIssue_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_PutIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PutIssueRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IssueServiceServer).PutIssue(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gdean.IssueService/PutIssue",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).PutIssue(ctx, req.(*PutIssueRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _IssueService_GetIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetIssueRequest)
 	if err := dec(in); err != nil {
@@ -298,6 +616,42 @@ func _IssueService_GetIssue_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IssueServiceServer).GetIssue(ctx, req.(*GetIssueRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IssueService_ListIssues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListIssuesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).ListIssues(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/ListIssues",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).ListIssues(ctx, req.(*ListIssuesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IssueService_UpdateIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateIssueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).UpdateIssue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/UpdateIssue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).UpdateIssue(ctx, req.(*UpdateIssueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -320,74 +674,74 @@ func _IssueService_DeleteIssue_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_CreateComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCommentRequest)
+func _IssueService_ExportIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportIssueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IssueServiceServer).CreateComment(ctx, in)
+		return srv.(IssueServiceServer).ExportIssue(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gdean.IssueService/CreateComment",
+		FullMethod: "/gdean.IssueService/ExportIssue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).CreateComment(ctx, req.(*CreateCommentRequest))
+		return srv.(IssueServiceServer).ExportIssue(ctx, req.(*ExportIssueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_PutComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PutCommentRequest)
+func _IssueService_UnDeleteIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnDeleteIssueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IssueServiceServer).PutComment(ctx, in)
+		return srv.(IssueServiceServer).UnDeleteIssue(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gdean.IssueService/PutComment",
+		FullMethod: "/gdean.IssueService/UnDeleteIssue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).PutComment(ctx, req.(*PutCommentRequest))
+		return srv.(IssueServiceServer).UnDeleteIssue(ctx, req.(*UnDeleteIssueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_GetComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCommentRequest)
+func _IssueService_DeleteIssueInternal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteIssueInternalRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IssueServiceServer).GetComment(ctx, in)
+		return srv.(IssueServiceServer).DeleteIssueInternal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gdean.IssueService/GetComment",
+		FullMethod: "/gdean.IssueService/DeleteIssueInternal",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).GetComment(ctx, req.(*GetCommentRequest))
+		return srv.(IssueServiceServer).DeleteIssueInternal(ctx, req.(*DeleteIssueInternalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_DeleteComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteCommentRequest)
+func _IssueService_UnDeleteIssueInternal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnDeleteIssueInternalRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IssueServiceServer).DeleteComment(ctx, in)
+		return srv.(IssueServiceServer).UnDeleteIssueInternal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gdean.IssueService/DeleteComment",
+		FullMethod: "/gdean.IssueService/UnDeleteIssueInternal",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).DeleteComment(ctx, req.(*DeleteCommentRequest))
+		return srv.(IssueServiceServer).UnDeleteIssueInternal(ctx, req.(*UnDeleteIssueInternalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -410,24 +764,6 @@ func _IssueService_CreateData_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _IssueService_PutData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PutDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IssueServiceServer).PutData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gdean.IssueService/PutData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IssueServiceServer).PutData(ctx, req.(*PutDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _IssueService_GetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDataRequest)
 	if err := dec(in); err != nil {
@@ -446,6 +782,42 @@ func _IssueService_GetData_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _IssueService_ListData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).ListData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/ListData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).ListData(ctx, req.(*ListDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IssueService_UpdateData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).UpdateData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/UpdateData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).UpdateData(ctx, req.(*UpdateDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _IssueService_DeleteData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteDataRequest)
 	if err := dec(in); err != nil {
@@ -460,6 +832,24 @@ func _IssueService_DeleteData_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IssueServiceServer).DeleteData(ctx, req.(*DeleteDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IssueService_UnDeleteData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnDeleteDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IssueServiceServer).UnDeleteData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gdean.IssueService/UnDeleteData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IssueServiceServer).UnDeleteData(ctx, req.(*UnDeleteDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -512,48 +902,60 @@ var IssueService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _IssueService_CreateIssue_Handler,
 		},
 		{
-			MethodName: "PutIssue",
-			Handler:    _IssueService_PutIssue_Handler,
-		},
-		{
 			MethodName: "GetIssue",
 			Handler:    _IssueService_GetIssue_Handler,
+		},
+		{
+			MethodName: "ListIssues",
+			Handler:    _IssueService_ListIssues_Handler,
+		},
+		{
+			MethodName: "UpdateIssue",
+			Handler:    _IssueService_UpdateIssue_Handler,
 		},
 		{
 			MethodName: "DeleteIssue",
 			Handler:    _IssueService_DeleteIssue_Handler,
 		},
 		{
-			MethodName: "CreateComment",
-			Handler:    _IssueService_CreateComment_Handler,
+			MethodName: "ExportIssue",
+			Handler:    _IssueService_ExportIssue_Handler,
 		},
 		{
-			MethodName: "PutComment",
-			Handler:    _IssueService_PutComment_Handler,
+			MethodName: "UnDeleteIssue",
+			Handler:    _IssueService_UnDeleteIssue_Handler,
 		},
 		{
-			MethodName: "GetComment",
-			Handler:    _IssueService_GetComment_Handler,
+			MethodName: "DeleteIssueInternal",
+			Handler:    _IssueService_DeleteIssueInternal_Handler,
 		},
 		{
-			MethodName: "DeleteComment",
-			Handler:    _IssueService_DeleteComment_Handler,
+			MethodName: "UnDeleteIssueInternal",
+			Handler:    _IssueService_UnDeleteIssueInternal_Handler,
 		},
 		{
 			MethodName: "CreateData",
 			Handler:    _IssueService_CreateData_Handler,
 		},
 		{
-			MethodName: "PutData",
-			Handler:    _IssueService_PutData_Handler,
-		},
-		{
 			MethodName: "GetData",
 			Handler:    _IssueService_GetData_Handler,
 		},
 		{
+			MethodName: "ListData",
+			Handler:    _IssueService_ListData_Handler,
+		},
+		{
+			MethodName: "UpdateData",
+			Handler:    _IssueService_UpdateData_Handler,
+		},
+		{
 			MethodName: "DeleteData",
 			Handler:    _IssueService_DeleteData_Handler,
+		},
+		{
+			MethodName: "UnDeleteData",
+			Handler:    _IssueService_UnDeleteData_Handler,
 		},
 		{
 			MethodName: "DecideBranch",
