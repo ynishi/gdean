@@ -16,7 +16,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	pb "github.com/ynishi/gdean/pb"
+	pb "github.com/ynishi/gdean/pb/v1"
 	s "github.com/ynishi/gdean/service"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
