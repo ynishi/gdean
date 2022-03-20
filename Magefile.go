@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"path"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -21,12 +22,15 @@ func Build() error {
 	return nil
 }
 
-// Runs protoc
-func Protoc() error {
-	os.Chdir("pb")
-	defer os.Chdir("..")
+func protocWith(version string) error {
+	cur, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	os.Chdir(path.Join("pb"))
+	defer os.Chdir(cur)
 	for _, t := range append(services, "util") {
-		target := "gdean" + t + ".proto"
+		target := path.Join(version, "gdean"+t+".proto")
 		if err := sh.Run(
 			"protoc",
 			"--go_out=.",
@@ -36,6 +40,16 @@ func Protoc() error {
 			"--experimental_allow_proto3_optional",
 			target); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// Runs protoc
+func Protoc() error {
+	for _, v := range []string{"", "v1"} {
+		if err := protocWith(v); err != nil {
+			return nil
 		}
 	}
 	return nil
@@ -71,6 +85,17 @@ func Docker() error {
 		if err := sh.Run("docker", "build", "-t", "gdean-"+t, "-f", "Dockerfile."+t, "."); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// Runs temp server via go run, support appname APP={service name} mage RunS
+func RunS() error {
+	api := path.Join("cmd", os.Getenv("APP")+"api")
+	maingo := path.Join(api, "main.go")
+	wirego := path.Join(api, "wire_gen.go")
+	if err := sh.Run("go", "run", maingo, wirego); err != nil {
+		return err
 	}
 	return nil
 }
