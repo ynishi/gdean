@@ -1,42 +1,42 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/ynishi/gdean";
+option go_package = "github.com/ynishi/gdean/v1";
 
-package gdean;
+package gdean.v1;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/descriptor.proto";
 import "google/protobuf/field_mask.proto";
 import "google/api/field_behavior.proto";
 import "google/rpc/status.proto";
-import "gdeanutil.proto";
+import "v1/gdeanutil.proto";
 
 service UserService {
   // standard resource apis for user
   rpc CreateUser(CreateUserRequest) returns(CreateUserResponse) {
-    option(gdean.util.method_signature) = "user";
+    option(gdean.v1.util.method_signature) = "user";
   }
   rpc GetUser(GetUserRequest) returns(GetUserResponse) {
-    option(gdean.util.method_signature) = "user_id";
+    option(gdean.v1.util.method_signature) = "user_id";
   }
   rpc ListUsers(ListUsersRequest) returns(ListUsersResponse) {
-    option(gdean.util.method_signature) = "filter";
+    option(gdean.v1.util.method_signature) = "filter";
   }
   rpc UpdateUser(UpdateUserRequest) returns(UpdateUserResponse) {
-    option(gdean.util.method_signature) = "user_id,user,field_mask";
+    option(gdean.v1.util.method_signature) = "user_id,user,field_mask";
   }
   rpc DeleteUser(DeleteUserRequest) returns(DeleteUserResponse) {
-    option(gdean.util.method_signature) = "user_id";
+    option(gdean.v1.util.method_signature) = "user_id";
   }
 
   // util custom apis
   rpc UnDeleteUser(UnDeleteUserRequest) returns(UnDeleteUserResponse) {
-    option(gdean.util.method_signature) = "user_id";
+    option(gdean.v1.util.method_signature) = "user_id";
   }
 }
 
 message User {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.User",
     pattern : "users/{user_id}}",
     body : "user",
@@ -60,8 +60,9 @@ message CreateUserResponse {
 }
 
 message GetUserRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
 }
 
 message GetUserResponse {
@@ -88,15 +89,17 @@ message UpdateUserResponse {
 }
 
 message DeleteUserRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
 }
 
 message DeleteUserResponse { google.rpc.Status status = 1; }
 
 message UnDeleteUserRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
 }
 
 message UnDeleteUserResponse { google.rpc.Status status = 1; }
@@ -109,70 +112,70 @@ service IssueService {
   // consider custom api to get user and create or get comment for convinience,
   // now use update or get
   rpc CreateIssue(CreateIssueRequest) returns(CreateIssueResponse) {
-    option(gdean.util.method_signature) = "user_id,issue";
+    option(gdean.v1.util.method_signature) = "user_id,issue";
   }
   rpc GetIssue(GetIssueRequest) returns(GetIssueResponse) {
-    option(gdean.util.method_signature) = "issue_id";
+    option(gdean.v1.util.method_signature) = "issue_id";
   }
   rpc ListIssues(ListIssuesRequest) returns(ListIssuesResponse) {
-    option(gdean.util.method_signature) = "user_id,filter";
+    option(gdean.v1.util.method_signature) = "user_id,filter";
   }
   // update operator expect in context auth data.
   rpc UpdateIssue(UpdateIssueRequest) returns(UpdateIssueResponse) {
-    option(gdean.util.method_signature) = "user_id,issue,field_mask";
+    option(gdean.v1.util.method_signature) = "user_id,issue,field_mask";
   }
   rpc DeleteIssue(DeleteIssueRequest) returns(DeleteIssueResponse) {
-    option(gdean.util.method_signature) = "issue_id";
+    option(gdean.v1.util.method_signature) = "issue_id";
   }
   // util custom apis for issue
   rpc ExportIssue(ExportIssueRequest) returns(ExportIssueResponse) {
-    option(gdean.util.method_signature) = "user_id";
+    option(gdean.v1.util.method_signature) = "user_id";
   }
   rpc UnDeleteIssue(UnDeleteIssueRequest) returns(UnDeleteIssueResponse) {
-    option(gdean.util.method_signature) = "issue_id";
+    option(gdean.v1.util.method_signature) = "issue_id";
   }
   rpc DeleteIssueInternal(DeleteIssueInternalRequest)
       returns(DeleteIssueInternalResponse) {
-    option(gdean.util.method_signature) = "issue_id,child_id,child_type";
+    option(gdean.v1.util.method_signature) = "issue_id,child_id,child_type";
   }
   rpc UnDeleteIssueInternal(UnDeleteIssueInternalRequest)
       returns(UnDeleteIssueInternalResponse) {
-    option(gdean.util.method_signature) = "issue_id,child_id,child_type";
+    option(gdean.v1.util.method_signature) = "issue_id,child_id,child_type";
   }
   // standard resource apis for data, children of issue(TODO: consider to
   // separate domain)
   rpc CreateData(CreateDataRequest) returns(CreateDataResponse) {
-    option(gdean.util.method_signature) = "user_id,data";
+    option(gdean.v1.util.method_signature) = "user_id,data";
   }
   rpc GetData(GetDataRequest) returns(GetDataResponse) {
-    option(gdean.util.method_signature) = "data_id";
+    option(gdean.v1.util.method_signature) = "data_id";
   }
   rpc ListData(ListDataRequest) returns(ListDataResponse) {
-    option(gdean.util.method_signature) = "user_id,filter";
+    option(gdean.v1.util.method_signature) = "user_id,filter";
   }
   rpc UpdateData(UpdateDataRequest) returns(UpdateDataResponse) {
-    option(gdean.util.method_signature) = "user_id,data,field_mask";
+    option(gdean.v1.util.method_signature) = "user_id,data,field_mask";
   }
   rpc DeleteData(DeleteDataRequest) returns(DeleteDataResponse) {
-    option(gdean.util.method_signature) = "data_id";
+    option(gdean.v1.util.method_signature) = "data_id";
   }
   // util custom apis for data
   rpc UnDeleteData(UnDeleteDataRequest) returns(UnDeleteDataResponse) {
-    option(gdean.util.method_signature) = "data_id";
+    option(gdean.v1.util.method_signature) = "data_id";
   }
   // custom apis
   rpc DecideBranch(DecideBranchRequest) returns(DecideBranchResponse) {
-    option(gdean.util.method_signature) = "issue_id,branch_id";
+    option(gdean.v1.util.method_signature) = "issue_id,branch_id";
   }
   rpc AddAnalyzedResult(AddAnalyzedResultRequest)
       returns(AddAnalyzedResultResponse) {
-    option(gdean.util.method_signature) = "issue_id,analyze_result";
+    option(gdean.v1.util.method_signature) = "issue_id,analyze_result";
   }
   // TODO: consider Operations for long or batches
 }
 
 message Issue {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.Issue" pattern : "users/{user_id}/issues/{issue_id}"
     body : "issue" parent : "user"
   };
@@ -181,22 +184,23 @@ message Issue {
   string desc = 3;
   User author = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   repeated string contributers =
-      5 [(gdean.util.resource_reference) = {type : "gdean.User"}];
+      5 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   repeated Branch branches = 6;
   repeated Comment comments = 7;
   repeated Data data = 8;
   repeated AnalyzedResult results =
       9 [(google.api.field_behavior) = OUTPUT_ONLY];
   string decided =
-      10 [(gdean.util.resource_reference) = {type : "gdean.Branch"}];
-  string operator= 11 [(google.api.field_behavior) = OUTPUT_ONLY,
-                       (gdean.util.resource_reference) = {type : "gdean.User"}];
+      10 [(gdean.v1.util.resource_reference) = {type : "gdean.Branch"}];
+  string operator=
+      11 [(google.api.field_behavior) = OUTPUT_ONLY,
+          (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   google.protobuf.Timestamp create_time =
       12 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message Branch {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.Branch",
     pattern : "internal",
     parent : "issue"
@@ -205,8 +209,9 @@ message Branch {
   string content = 2;
   repeated string descs = 3;
   repeated float params = 4;
-  string operator= 5 [(google.api.field_behavior) = OUTPUT_ONLY,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string operator=
+      5 [(google.api.field_behavior) = OUTPUT_ONLY,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   google.protobuf.Timestamp create_time =
       6 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp update_time =
@@ -214,14 +219,15 @@ message Branch {
 }
 
 message Comment {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.Comment",
     pattern : "internal",
     parent : "issue"
   };
   // TODO: consider add parent prop to include in any object.
   optional string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  string author = 2 [(gdean.util.resource_reference) = {type : "gdean.User"}];
+  string author =
+      2 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   string content = 3;
   string key = 4;
   google.protobuf.Timestamp create_time =
@@ -231,20 +237,21 @@ message Comment {
 }
 
 message Data {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.Data",
     pattern : "users/{user_id}/data/{data_id}",
     parent : "user"
   };
   optional string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   repeated string issue =
-      2 [(gdean.util.resource_reference) = {type : "gdean.Issue"}];
+      2 [(gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   repeated string columns = 3;
   repeated string indexes = 4;
   repeated float params = 5;
   uint32 length = 6;
-  string operator= 7 [(google.api.field_behavior) = OUTPUT_ONLY,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string operator=
+      7 [(google.api.field_behavior) = OUTPUT_ONLY,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   google.protobuf.Timestamp create_time =
       8 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp update_time =
@@ -252,14 +259,15 @@ message Data {
 }
 
 message AnalyzedResult {
-  option(gdean.util.resource) = {
+  option(gdean.v1.util.resource) = {
     type : "gdean.AnalyzedResult",
     pattern : "internal",
     parent : "issue"
   };
   optional string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  string issuse = 2 [(gdean.util.resource_reference) = {type : "gdean.Issue"},
-                     (google.api.field_behavior) = IMMUTABLE];
+  string issuse =
+      2 [(gdean.v1.util.resource_reference) = {type : "gdean.Issue"},
+         (google.api.field_behavior) = IMMUTABLE];
   string desc = 3 [(google.api.field_behavior) = IMMUTABLE];
   // inlined branches
   repeated Branch branches = 4 [(google.api.field_behavior) = IMMUTABLE];
@@ -269,10 +277,11 @@ message AnalyzedResult {
   repeated string evaluates = 6 [(google.api.field_behavior) = IMMUTABLE];
   repeated Comment comments = 7;
   string decided =
-      8 [(gdean.util.resource_reference) = {type : "gdean.Branch"}];
+      8 [(gdean.v1.util.resource_reference) = {type : "gdean.Branch"}];
   string reason = 9;
-  string operator= 10 [(google.api.field_behavior) = OUTPUT_ONLY,
-                       (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string operator=
+      10 [(google.api.field_behavior) = OUTPUT_ONLY,
+          (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   google.protobuf.Timestamp create_time =
       11 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp update_time =
@@ -281,17 +290,18 @@ message AnalyzedResult {
 
 message CreateIssueRequest {
   string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) =
+                      (gdean.v1.util.resource_reference) =
                           {type : "gdean.User", child_type : "gdean.Issue"}];
   Issue issue = 2 [(google.api.field_behavior) = REQUIRED];
   // The ID to use for the new issue use specified.
   optional string issue_id =
-      3 [(gdean.util.resource_reference) =
+      3 [(gdean.v1.util.resource_reference) =
              {type : "gdean.User", child_type : "gdean.Issue"}];
 }
 
 message CreateIssueResponse {
-  string user_id = 1 [(gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   Issue issue = 2;
   google.rpc.Status status = 3;
 }
@@ -299,7 +309,7 @@ message CreateIssueResponse {
 message GetIssueRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
 }
 
 message GetIssueResponse {
@@ -308,8 +318,9 @@ message GetIssueResponse {
 }
 
 message ListIssuesRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   optional string filter = 2;
 }
 
@@ -326,7 +337,7 @@ message UpdateIssueRequest {
 
 message UpdateIssueResponse {
   string issue_id =
-      1 [(gdean.util.resource_reference) = {type : "gdean.Issue"}];
+      1 [(gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   Issue issue = 2;
   google.rpc.Status status = 3;
 }
@@ -334,14 +345,15 @@ message UpdateIssueResponse {
 message DeleteIssueRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
 }
 
 message DeleteIssueResponse { google.rpc.Status status = 1; }
 
 message ExportIssueRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
 }
 
 message ExportIssueResponse {
@@ -352,12 +364,12 @@ message ExportIssueResponse {
 message UnDeleteIssueRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
 }
 
 message UnDeleteIssueResponse {
   string issue_id =
-      1 [(gdean.util.resource_reference) = {type : "gdean.Issue"}];
+      1 [(gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   Issue issue = 2;
   google.rpc.Status status = 3;
 }
@@ -365,7 +377,7 @@ message UnDeleteIssueResponse {
 message DeleteIssueInternalRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   string child_id = 2 [(google.api.field_behavior) = REQUIRED];
   string child_type = 3 [(google.api.field_behavior) = REQUIRED];
 }
@@ -373,14 +385,14 @@ message DeleteIssueInternalRequest {
 message DeleteIssueInternalResponse {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   google.rpc.Status status = 2;
 }
 
 message UnDeleteIssueInternalRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   string child_id = 2 [(google.api.field_behavior) = REQUIRED];
   string child_type = 3 [(google.api.field_behavior) = REQUIRED];
 }
@@ -388,26 +400,29 @@ message UnDeleteIssueInternalRequest {
 message UnDeleteIssueInternalResponse {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   google.rpc.Status status = 2;
 }
 
 message CreateDataRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   Data data = 2 [(google.api.field_behavior) = REQUIRED];
   optional string data_id = 3;
 }
 
 message CreateDataResponse {
-  string user_id = 1 [(gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   Data data = 2;
   google.rpc.Status status = 3;
 }
 
 message GetDataRequest {
-  string data_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string data_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
 
 message GetDataResponse {
@@ -416,8 +431,9 @@ message GetDataResponse {
 }
 
 message ListDataRequest {
-  string user_id = 1 [(google.api.field_behavior) = REQUIRED,
-                      (gdean.util.resource_reference) = {type : "gdean.User"}];
+  string user_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   optional string filter = 2;
 }
 
@@ -433,21 +449,24 @@ message UpdateDataRequest {
 }
 
 message UpdateDataResponse {
-  string data_id = 1 [(gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string data_id =
+      1 [(gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
   Data data = 2;
   google.rpc.Status status = 3;
 }
 
 message DeleteDataRequest {
-  string dasta_id = 1 [(google.api.field_behavior) = REQUIRED,
-                       (gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string dasta_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
 
 message DeleteDataResponse { google.rpc.Status status = 1; }
 
 message UnDeleteDataRequest {
-  string dasta_id = 1 [(google.api.field_behavior) = REQUIRED,
-                       (gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string dasta_id =
+      1 [(google.api.field_behavior) = REQUIRED,
+         (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
 
 message UnDeleteDataResponse { google.rpc.Status status = 1; }
@@ -455,10 +474,10 @@ message UnDeleteDataResponse { google.rpc.Status status = 1; }
 message DecideBranchRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   string branch_id =
       2 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Branch"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Branch"}];
 }
 
 message DecideBranchResponse { google.rpc.Status status = 1; }
@@ -466,13 +485,13 @@ message DecideBranchResponse { google.rpc.Status status = 1; }
 message AddAnalyzedResultRequest {
   string issue_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.Issue"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
   AnalyzedResult analyzed_result = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message AddAnalyzedResultResponse {
   string analzyed_result_id =
       1 [(google.api.field_behavior) = REQUIRED,
-         (gdean.util.resource_reference) = {type : "gdean.AnalyzedResult"}];
+         (gdean.v1.util.resource_reference) = {type : "gdean.AnalyzedResult"}];
   google.rpc.Status status = 2;
 }

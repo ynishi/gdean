@@ -1,0 +1,24 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/ynishi/gdean/v1";
+
+package gdean.v1;
+import "google/protobuf/timestamp.proto";
+
+service GDeanService {
+  rpc ReportMaxEmvResults(ReportRequest) returns(ReportResponse) {}
+}
+
+message Report {
+  int32 numberOfCalc = 1;
+  repeated Result result = 2;
+}
+message ReportRequest {}
+
+message ReportResponse { Report report = 1; }
+
+message Result {
+  int32 maxEmv = 1;
+  google.protobuf.Timestamp create_time = 2;
+}
