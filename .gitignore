@@ -16,3 +16,6 @@
 
 # for temp sqlite3 file
 *.db
+
+# for rethink db
+rethinkdb_*

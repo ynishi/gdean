@@ -2,9 +2,11 @@ package service
 
 import (
 	"errors"
+	"github.com/rs/xid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"math/big"
 )
 
 // helper for get extension
@@ -30,4 +32,21 @@ func GetMethodExt(x protoreflect.Message, serviceName, methodName string, xt pro
 		return nil, errors.New("convert Ext failed")
 	}
 	return &ext, nil
+}
+
+// helpers about identity generation
+func NewId() (string, error) {
+	baseId := xid.New()
+	return AddChecksum(baseId.String())
+}
+
+var checksumString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZa"
+
+func AddChecksum(id string) (string, error) {
+	v := big.NewInt(0).SetBytes([]byte(id))
+	checksum := int(v.Mod(v, big.NewInt(37)).Uint64())
+	if checksum > len(checksumString) {
+		return "", errors.New("invalid checksum, length over")
+	}
+	return id + string(checksumString[checksum]), nil
 }
