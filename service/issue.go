@@ -19,6 +19,7 @@ import (
 )
 
 type IssueServiceServer struct {
+	// embed service server interface, to check whether all interface impl, comment out and embed pb.UnsafeIssueServiceServer interface
 	pb.IssueServiceServer
 	Repo *IssueRepository
 }
@@ -88,7 +89,7 @@ func (s *IssueRepository) Init() (err error) {
 		}
 	}()
 	s.RSess = append(s.RSess, session)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// ignore if exist, TODO: change to error check
 	_ = runutil.Retry(5*time.Second, ctx.Done(), func() error {
@@ -241,14 +242,14 @@ func (s *IssueRepository) PutIssue(ctx context.Context, issueId string, issue *p
 	return issue, nil
 }
 
-func (s *IssueRepository) DeleteIssue(ctx context.Context, issueId string) error {
+func (s *IssueRepository) mutDelIssue(ctx context.Context, issueId string, isDeleted bool) error {
 	session := s.RSess[0]
 	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		_, err = r.DB("issuedb").Table("issues").Get(issueId).Update(map[string]interface{}{
-			"is_deleted": true,
+			"is_deleted": isDeleted,
 		}).RunWrite(session)
 		return err
 	})
@@ -259,21 +260,152 @@ func (s *IssueRepository) DeleteIssue(ctx context.Context, issueId string) error
 	return nil
 }
 
+func (s *IssueRepository) DeleteIssue(ctx context.Context, issueId string) error {
+	return s.mutDelIssue(ctx, issueId, true)
+}
+
 func (s *IssueRepository) UnDeleteIssue(ctx context.Context, issueId string) error {
+	return s.mutDelIssue(ctx, issueId, false)
+}
+
+func (s *IssueRepository) mutIssueInternal(ctx context.Context, issueId, childId, childType string, is_deleted bool) error {
 	session := s.RSess[0]
 	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	var err error
+	childName := childType + "s"
+	childIdName := childType + "_id"
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
 		_, err = r.DB("issuedb").Table("issues").Get(issueId).Update(map[string]interface{}{
-			"is_deleted": false,
+			childName: r.Row.Field(childName).Filter(map[string]interface{}{
+				childIdName: childId,
+			}).Update(map[string]interface{}{
+				"is_deleted": is_deleted,
+			}),
 		}).RunWrite(session)
 		return err
 	})
 	if err != nil {
 		return err
 	}
+	s.DeleteCache(issueId, &pb.Issue{})
 	return nil
+}
+
+func (s *IssueRepository) DeleteIssueInternal(ctx context.Context, issueId, childId, childType string) error {
+	return s.mutIssueInternal(ctx, issueId, childId, childType, true)
+}
+
+func (s *IssueRepository) UnDeleteIssueInternal(ctx context.Context, issueId, childId, childType string) error {
+	return s.mutIssueInternal(ctx, issueId, childId, childType, false)
+}
+
+// data for repository
+func (s *IssueRepository) CreateData(ctx context.Context, data *pb.Data) (*pb.Data, error) {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	err := runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		return r.DB("issuedb").Table("data").Insert(data).Exec(session)
+	})
+	if err != nil {
+		return nil, err
+	}
+	s.AddCache(*data.Id, data)
+	return data, nil
+}
+
+func (s *IssueRepository) FetchData(ctx context.Context, dataId string) (*pb.Data, error) {
+	var data pb.Data
+	if v, ok := s.GetCache(dataId, &data); ok {
+		return v.(*pb.Data), nil
+	}
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var res *r.Cursor
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		res, err = r.DB("issuedb").Table("data").Filter(map[string]string{
+			"data_id": dataId,
+		}).Run(session)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Close()
+	if err := res.One(&data); err != nil {
+		return nil, err
+	}
+	s.AddCache(dataId, &data)
+	return &data, nil
+}
+
+func (s *IssueRepository) FetchDataList(ctx context.Context, userId string) (data []*pb.Data, err error) {
+	// TODO: consider use cache(maybe support query or condition)
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var res *r.Cursor
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		res, err = r.DB("issuedb").Table("data").Filter(map[string]string{
+			"author": userId,
+		}).Run(session)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Close()
+	if err := res.All(&data); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (s *IssueRepository) PutData(ctx context.Context, dataId string, data *pb.Data) (*pb.Data, error) {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		_, err = r.DB("issuedb").Table("data").Get(dataId).Update(
+			data,
+		).RunWrite(session)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	s.AddCache(dataId, data)
+	return data, nil
+}
+
+func (s *IssueRepository) mutDelData(ctx context.Context, dataId string, isDeleted bool) error {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		_, err = r.DB("issuedb").Table("data").Get(dataId).Update(map[string]interface{}{
+			"is_deleted": isDeleted,
+		}).RunWrite(session)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	s.DeleteCache(dataId, &pb.Data{})
+	return nil
+}
+
+func (s *IssueRepository) DeleteData(ctx context.Context, dataId string) error {
+	return s.mutDelIssue(ctx, dataId, true)
+}
+
+func (s *IssueRepository) UnDeleteData(ctx context.Context, dataId string) error {
+	return s.mutDelIssue(ctx, dataId, false)
 }
 
 // service
@@ -392,6 +524,191 @@ func (s *IssueServiceServer) UnDeleteIssue(ctx context.Context, in *pb.UnDeleteI
 		Status: &gstatus.Status{
 			Code:    int32(code.Code_OK),
 			Message: "delete issue completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) ExportIssue(ctx context.Context, in *pb.ExportIssueRequest) (res *pb.ExportIssueResponse, err error) {
+	issues, err := s.Repo.FetchIssues(ctx, in.UserId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	return &pb.ExportIssueResponse{
+		Issues: issues,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "list issue completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) DeleteIssueInternal(ctx context.Context, in *pb.DeleteIssueInternalRequest) (res *pb.DeleteIssueInternalResponse, err error) {
+	if _, err = s.Repo.FetchIssue(ctx, in.IssueId); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	if err = s.Repo.DeleteIssueInternal(ctx, in.IssueId, in.ChildId, in.ChildType); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.DeleteIssueInternalResponse{
+		IssueId: in.IssueId,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "delete issue internal completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) UnDeleteIssueInternal(ctx context.Context, in *pb.UnDeleteIssueInternalRequest) (res *pb.UnDeleteIssueInternalResponse, err error) {
+	if _, err = s.Repo.FetchIssue(ctx, in.IssueId); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	if err = s.Repo.UnDeleteIssueInternal(ctx, in.IssueId, in.ChildId, in.ChildType); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.UnDeleteIssueInternalResponse{
+		IssueId: in.IssueId,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "undelete issue internal completed",
+		},
+	}, nil
+}
+
+// data
+func (s *IssueServiceServer) CreateData(ctx context.Context, in *pb.CreateDataRequest) (*pb.CreateDataResponse, error) {
+	id, err := NewId()
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	// set issueId when set, no existence check, simply fail when invalid.
+	if in.DataId != nil {
+		id = *in.DataId
+	}
+	if _, err := s.Repo.FetchUser(ctx, in.UserId); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	data := in.Data
+	data.Id = &id
+	data.CreateTime = timestamppb.Now()
+
+	if _, err = s.Repo.CreateData(ctx, data); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.CreateDataResponse{
+		Data: data,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "create data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) GetData(ctx context.Context, in *pb.GetDataRequest) (*pb.GetDataResponse, error) {
+	data, err := s.Repo.FetchData(ctx, in.DataId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	return &pb.GetDataResponse{
+		Data: data,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "get data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) ListData(ctx context.Context, in *pb.ListDataRequest) (*pb.ListDataResponse, error) {
+	data, err := s.Repo.FetchDataList(ctx, in.UserId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	return &pb.ListDataResponse{
+		Data: data,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "list data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) UpdateData(ctx context.Context, in *pb.UpdateDataRequest) (*pb.UpdateDataResponse, error) {
+	if _, err := s.Repo.FetchData(ctx, *in.Data.Id); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	data, err := s.Repo.PutData(ctx, *in.Data.Id, in.Data)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.UpdateDataResponse{
+		Data: data,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "list data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) DeleteData(ctx context.Context, in *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error) {
+	if _, err := s.Repo.FetchData(ctx, in.DataId); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	if err := s.Repo.DeleteData(ctx, in.DataId); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.DeleteDataResponse{
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "delete data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) UnDeleteData(ctx context.Context, in *pb.UnDeleteDataRequest) (*pb.UnDeleteDataResponse, error) {
+	if _, err := s.Repo.FetchData(ctx, in.DataId); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	if err := s.Repo.UnDeleteData(ctx, in.DataId); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.UnDeleteDataResponse{
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "delete data completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) DecideBranch(ctx context.Context, in *pb.DecideBranchRequest) (*pb.DecideBranchResponse, error) {
+
+	issue, err := s.Repo.FetchIssue(ctx, in.IssueId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	issue.Decided = in.BranchId
+	if _, err := s.Repo.PutIssue(ctx, in.IssueId, issue); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.DecideBranchResponse{
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "decide branch completed",
+		},
+	}, nil
+}
+
+func (s *IssueServiceServer) AddAnalyzedResult(ctx context.Context, in *pb.AddAnalyzedResultRequest) (*pb.AddAnalyzedResultResponse, error) {
+	issue, err := s.Repo.FetchIssue(ctx, in.IssueId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+	issue.Results = append(issue.Results, in.AnalyzedResult)
+	if _, err := s.Repo.PutIssue(ctx, in.IssueId, issue); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.AddAnalyzedResultResponse{
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "add analyze result completed",
 		},
 	}, nil
 }

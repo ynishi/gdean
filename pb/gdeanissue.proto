@@ -239,6 +239,8 @@ message Data {
   optional string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   repeated string issue =
       2 [(gdean.util.resource_reference) = {type : "gdean.Issue"}];
+  repeated string author =
+      10 [(gdean.util.resource_reference) = {type : "gdean.User"}];
   repeated string columns = 3;
   repeated string indexes = 4;
   repeated float params = 5;
@@ -411,7 +413,7 @@ message GetDataRequest {
 }
 
 message GetDataResponse {
-  Issue issue = 1;
+  Data data = 1;
   google.rpc.Status status = 2;
 }
 
@@ -439,15 +441,15 @@ message UpdateDataResponse {
 }
 
 message DeleteDataRequest {
-  string dasta_id = 1 [(google.api.field_behavior) = REQUIRED,
-                       (gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string data_id = 1 [(google.api.field_behavior) = REQUIRED,
+                      (gdean.util.resource_reference) = {type : "gdean.Data"}];
 }
 
 message DeleteDataResponse { google.rpc.Status status = 1; }
 
 message UnDeleteDataRequest {
-  string dasta_id = 1 [(google.api.field_behavior) = REQUIRED,
-                       (gdean.util.resource_reference) = {type : "gdean.Data"}];
+  string data_id = 1 [(google.api.field_behavior) = REQUIRED,
+                      (gdean.util.resource_reference) = {type : "gdean.Data"}];
 }
 
 message UnDeleteDataResponse { google.rpc.Status status = 1; }
