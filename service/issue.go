@@ -93,18 +93,45 @@ func (s *IssueRepository) Init() (err error) {
 	defer cancel()
 	// ignore if exist, TODO: change to error check
 	_ = runutil.Retry(5*time.Second, ctx.Done(), func() error {
+		res, err := r.DBList().SetDifference([]interface{}{"rethinkdb", "test"}).Run(session)
+		if err != nil {
+			return err
+		}
+		var dbList []string
+		if err = res.All(&dbList); err != nil {
+			return err
+		}
+		var dbm = map[string]bool{}
+		for _, v := range dbList {
+			dbm[v] = true
+		}
 		for db, tables := range dbs {
-			err = r.DBCreate(db).Exec(session)
-			if err != nil {
-				return err
-			}
-			for _, table := range tables {
-				err = r.DB(db).TableCreate(table).Exec(session)
+			if _, ok := dbm[db]; !ok {
+				err = r.DBCreate(db).Exec(session)
 				if err != nil {
 					return err
 				}
 			}
-
+			res, err := r.DB(db).TableList().Run(session)
+			if err != nil {
+				return err
+			}
+			var tableList []string
+			if err = res.All(&tableList); err != nil {
+				return err
+			}
+			var tablem = map[string]bool{}
+			for _, v := range tableList {
+				tablem[v] = true
+			}
+			for _, table := range tables {
+				if _, ok := tablem[table]; !ok {
+					err = r.DB(db).TableCreate(table).Exec(session)
+					if err != nil {
+						return err
+					}
+				}
+			}
 		}
 		return nil
 	})

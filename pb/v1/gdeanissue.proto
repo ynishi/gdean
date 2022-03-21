@@ -426,7 +426,7 @@ message GetDataRequest {
 }
 
 message GetDataResponse {
-  Issue issue = 1;
+  Data data = 1;
   google.rpc.Status status = 2;
 }
 
@@ -456,7 +456,7 @@ message UpdateDataResponse {
 }
 
 message DeleteDataRequest {
-  string dasta_id =
+  string data_id =
       1 [(google.api.field_behavior) = REQUIRED,
          (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
@@ -464,7 +464,7 @@ message DeleteDataRequest {
 message DeleteDataResponse { google.rpc.Status status = 1; }
 
 message UnDeleteDataRequest {
-  string dasta_id =
+  string data_id =
       1 [(google.api.field_behavior) = REQUIRED,
          (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
