@@ -126,7 +126,7 @@ func TestShouldDelete(t *testing.T) {
 	_, err := repo.Delete(ctx, 1)
 	assert.Nil(t, err)
 	fetched, err := repo.Fetch(ctx, 1)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.EqualError(t, sql.ErrNoRows, "sql: no rows in result set")
 	assert.Nil(t, fetched)
 }
