@@ -115,3 +115,17 @@ func RunDB() error {
 	}
 	return nil
 }
+
+// Runs test
+func Test() error {
+	cur, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	os.Chdir("service")
+	defer os.Chdir(cur)
+	if err := sh.RunV("bash", "-c", "source calc/venv/bin/activate && go test"); err != nil {
+		return err
+	}
+	return nil
+}
