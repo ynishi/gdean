@@ -27,7 +27,7 @@ func protocWith(version string) error {
 	if err != nil {
 		panic(err)
 	}
-	os.Chdir(path.Join("pb"))
+	os.Chdir("pb")
 	defer os.Chdir(cur)
 	for _, t := range append(services, "util") {
 		target := path.Join(version, "gdean"+t+".proto")
@@ -73,6 +73,10 @@ func Wire() error {
 func Gqlgen() error {
 	os.Chdir("gql")
 	defer os.Chdir("..")
+
+	if err := sh.Run("go", "get", "github.com/ynishi/gdean@HEAD"); err != nil {
+		return err
+	}
 	if err := sh.Run("gqlgen"); err != nil {
 		return err
 	}
@@ -95,6 +99,18 @@ func RunS() error {
 	maingo := path.Join(api, "main.go")
 	wirego := path.Join(api, "wire_gen.go")
 	if err := sh.Run("go", "run", maingo, wirego); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Runs temp db via docker
+func RunDB() error {
+	cur, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	if err := sh.Run("docker", "run", "-v", cur+":/data", "-p", "8081:8080", "-p", "28015:28015", "-d", "rethinkdb"); err != nil {
 		return err
 	}
 	return nil
