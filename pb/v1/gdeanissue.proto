@@ -209,6 +209,7 @@ message Branch {
   string content = 2;
   repeated string descs = 3;
   repeated float params = 4;
+  bool is_deleted = 8;
   string operator=
       5 [(google.api.field_behavior) = OUTPUT_ONLY,
          (gdean.v1.util.resource_reference) = {type : "gdean.User"}];
@@ -230,6 +231,7 @@ message Comment {
       2 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   string content = 3;
   string key = 4;
+  bool is_deleted = 7;
   google.protobuf.Timestamp create_time =
       5 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp update_time =
@@ -245,6 +247,8 @@ message Data {
   optional string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   repeated string issue =
       2 [(gdean.v1.util.resource_reference) = {type : "gdean.Issue"}];
+  string author =
+      10 [(gdean.v1.util.resource_reference) = {type : "gdean.User"}];
   repeated string columns = 3;
   repeated string indexes = 4;
   repeated float params = 5;
@@ -426,7 +430,7 @@ message GetDataRequest {
 }
 
 message GetDataResponse {
-  Issue issue = 1;
+  Data data = 1;
   google.rpc.Status status = 2;
 }
 
@@ -456,7 +460,7 @@ message UpdateDataResponse {
 }
 
 message DeleteDataRequest {
-  string dasta_id =
+  string data_id =
       1 [(google.api.field_behavior) = REQUIRED,
          (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
@@ -464,7 +468,7 @@ message DeleteDataRequest {
 message DeleteDataResponse { google.rpc.Status status = 1; }
 
 message UnDeleteDataRequest {
-  string dasta_id =
+  string data_id =
       1 [(google.api.field_behavior) = REQUIRED,
          (gdean.v1.util.resource_reference) = {type : "gdean.Data"}];
 }
