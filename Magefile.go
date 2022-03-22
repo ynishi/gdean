@@ -104,16 +104,33 @@ func RunS() error {
 	return nil
 }
 
-// Runs temp db via docker
-func RunDB() error {
+func runDB(port, mgt_port string) error {
 	cur, err := os.Getwd()
 	if err != nil {
 		return err
 	}
-	if err := sh.Run("docker", "run", "-v", cur+":/data", "-p", "8081:8080", "-p", "28015:28015", "-d", "rethinkdb"); err != nil {
+	if err := sh.Run("docker", "run", "-v", cur+":/data", "-p", mgt_port+":8080", "-p", port+":28015", "-d", "rethinkdb"); err != nil {
 		return err
 	}
 	return nil
+}
+
+// Runs temp db via docker
+func RunDB() error {
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		port = "28015"
+	}
+	mgt_port := os.Getenv("DB_MGT_PORT")
+	if mgt_port == "" {
+		mgt_port = "8081"
+	}
+	return runDB(port, mgt_port)
+}
+
+// Runs db for test
+func RunTestDB() error {
+	return runDB("28115", "8180")
 }
 
 // Runs test

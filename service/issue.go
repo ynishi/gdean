@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -45,27 +46,46 @@ type IssueRepository struct {
 	Cache *lru.Cache
 }
 
+const ISSUEDB = "issuedb"
+const ISSUETABLE = "issues"
+const DATATABLE = "data"
+const INTABLE = "internals"
+const USERDB = "userdb"
+const USERTABLE = "users"
+
 var dbs = map[string][]string{
-	"issuedb": {
-		"issues",
+	ISSUEDB: {
+		ISSUETABLE,
+		DATATABLE,
+		INTABLE,
 	},
-	"userdb": {
-		"users",
+	USERDB: {
+		USERTABLE,
 	},
 }
 
 // Add item to repository cache with id(internal recognize its type), value as pointer.
 // When query passed as id, it maybe work even no support query base cache.
 func (s *IssueRepository) AddCache(id string, vp interface{}) {
+	b, err := json.Marshal(vp)
+	if err != nil {
+		return
+	}
 	if s.Cache != nil {
-		s.Cache.Add(fmt.Sprintf("%T-%s", vp, id), vp)
+		s.Cache.Add(fmt.Sprintf("%T-%s", vp, id), b)
 	}
 }
 
 // Get item from repository cache with id(internal, recognize its type), value as pointer
 func (s *IssueRepository) GetCache(id string, v interface{}) (interface{}, bool) {
+
 	if s.Cache != nil {
-		return s.Cache.Get(fmt.Sprintf("%T-%s", v, id))
+		if got, ok := s.Cache.Get(fmt.Sprintf("%T-%s", v, id)); ok {
+			if err := json.Unmarshal(got.([]byte), v); err != nil {
+				return nil, false
+			}
+			return v, true
+		}
 	}
 	return v, false
 }
@@ -77,6 +97,7 @@ func (s *IssueRepository) DeleteCache(id string, v interface{}) {
 }
 
 func (s *IssueRepository) Init() (err error) {
+	r.SetTags("json")
 	session, err := r.Connect(r.ConnectOpts{
 		Address: s.Rinfo,
 	})
@@ -88,8 +109,13 @@ func (s *IssueRepository) Init() (err error) {
 			session.Close()
 		}
 	}()
-	s.RSess = append(s.RSess, session)
+	rSess := make([]*r.Session, 0)
+	if len(s.RSess) > 0 {
+		rSess = s.RSess
+	}
+	s.RSess = append(rSess, session)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
 	defer cancel()
 	// ignore if exist, TODO: change to error check
 	_ = runutil.Retry(5*time.Second, ctx.Done(), func() error {
@@ -145,14 +171,32 @@ func (s *IssueRepository) Init() (err error) {
 
 // Repository
 // User
+
+func (s *IssueRepository) CreateUser(ctx context.Context, user *pb.User) (*pb.User, error) {
+	if user.Id == nil {
+		return nil, fmt.Errorf("invalid user, Id is not set")
+	}
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	err := runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		return r.DB(USERDB).Table(USERTABLE).Insert(user).Exec(session)
+	})
+	if err != nil {
+		return nil, err
+	}
+	s.AddCache(*user.Id, user)
+	return user, nil
+}
+
 func (s *IssueRepository) FetchUser(ctx context.Context, userId string) (*pb.User, error) {
 	var user pb.User
 	if v, ok := s.GetCache(userId, &user); ok {
 		return v.(*pb.User), nil
 	}
 	session := s.RSess[0]
-	res, err := r.DB("userdb").Table("users").Filter(map[string]string{
-		"user_id": userId,
+	res, err := r.DB(USERDB).Table(USERTABLE).Filter(map[string]string{
+		"id": userId,
 	}).Run(session)
 	if err != nil {
 		return nil, err
@@ -165,13 +209,32 @@ func (s *IssueRepository) FetchUser(ctx context.Context, userId string) (*pb.Use
 	return &user, nil
 }
 
+func (s *IssueRepository) HardDeleteUser(ctx context.Context, userId string) error {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		_, err = r.DB(USERDB).Table(USERTABLE).Get(userId).Delete().RunWrite(session)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	s.DeleteCache(userId, &pb.User{})
+	return nil
+}
+
 // Issue
 func (s *IssueRepository) CreateIssue(ctx context.Context, issue *pb.Issue) (*pb.Issue, error) {
 	session := s.RSess[0]
 	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	err := runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		return r.DB("issuedb").Table("issues").Insert(issue).Exec(session)
+		if err := r.DB(ISSUEDB).Table(ISSUETABLE).Insert(issue).Exec(session); err != nil {
+			return err
+		}
+		return s.mutDelIssue(ctx, *issue.Id, false)
 	})
 	if err != nil {
 		return nil, err
@@ -184,6 +247,9 @@ func (s *IssueRepository) FetchIssue(ctx context.Context, issueId string) (*pb.I
 	var issue pb.Issue
 	var user *pb.User
 	if v, ok := s.GetCache(issueId, &issue); ok {
+		if issue.Author == nil || issue.Author.Id == nil {
+			return nil, fmt.Errorf("invalid author in cache")
+		}
 		user, err := s.FetchUser(ctx, *issue.Author.Id)
 		if err != nil {
 			return nil, err
@@ -198,8 +264,9 @@ func (s *IssueRepository) FetchIssue(ctx context.Context, issueId string) (*pb.I
 	var res *r.Cursor
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		res, err = r.DB("issuedb").Table("issues").Filter(map[string]string{
-			"issue_id": issueId,
+		res, err = r.DB(ISSUEDB).Table(ISSUETABLE).Filter(map[string]interface{}{
+			"id":         issueId,
+			"is_deleted": false,
 		}).Run(session)
 		return err
 	})
@@ -210,11 +277,33 @@ func (s *IssueRepository) FetchIssue(ctx context.Context, issueId string) (*pb.I
 	if err := res.One(&issue); err != nil {
 		return nil, err
 	}
+	//	return &issue, err
+	if issue.Author == nil || issue.Author.Id == nil {
+		return nil, fmt.Errorf("invalid author")
+	}
 	user, err = s.FetchUser(ctx, *issue.Author.Id)
 	if err != nil {
 		return nil, err
 	}
 	issue.Author = user
+	if issue.Branches != nil || len(issue.Branches) > 0 {
+		b := []*pb.Branch{}
+		for i, v := range issue.Branches {
+			if !v.IsDeleted {
+				b = append(b, issue.Branches[i])
+			}
+		}
+		issue.Branches = b
+	}
+	if issue.Comments != nil || len(issue.Comments) > 0 {
+		c := []*pb.Comment{}
+		for i, v := range issue.Comments {
+			if !v.IsDeleted {
+				c = append(c, issue.Comments[i])
+			}
+		}
+		issue.Comments = c
+	}
 	s.AddCache(issueId, &issue)
 	return &issue, nil
 }
@@ -232,10 +321,11 @@ func (s *IssueRepository) FetchIssues(ctx context.Context, userId string) ([]*pb
 	defer cancel()
 	var res *r.Cursor
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		res, err = r.DB("issuedb").Table("issues").Filter(map[string]string{
-			"author": userId,
-		}).Run(session)
-		return err
+		res, err = r.DB(ISSUEDB).Table(ISSUETABLE).Filter(r.Row.Field("author").Field("id").Eq(userId)).Run(session)
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -257,7 +347,7 @@ func (s *IssueRepository) PutIssue(ctx context.Context, issueId string, issue *p
 	defer cancel()
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		_, err = r.DB("issuedb").Table("issues").Get(issueId).Update(
+		_, err = r.DB(ISSUEDB).Table(ISSUETABLE).Get(issueId).Update(
 			issue,
 		).RunWrite(session)
 		return err
@@ -275,7 +365,7 @@ func (s *IssueRepository) mutDelIssue(ctx context.Context, issueId string, isDel
 	defer cancel()
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		_, err = r.DB("issuedb").Table("issues").Get(issueId).Update(map[string]interface{}{
+		_, err = r.DB(ISSUEDB).Table(ISSUETABLE).Get(issueId).Update(map[string]interface{}{
 			"is_deleted": isDeleted,
 		}).RunWrite(session)
 		return err
@@ -295,19 +385,34 @@ func (s *IssueRepository) UnDeleteIssue(ctx context.Context, issueId string) err
 	return s.mutDelIssue(ctx, issueId, false)
 }
 
+func (s *IssueRepository) HardDeleteIssue(ctx context.Context, issueId string) error {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		_, err = r.DB(ISSUEDB).Table(ISSUETABLE).Get(issueId).Delete().RunWrite(session)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	s.DeleteCache(issueId, &pb.Issue{})
+	return nil
+}
+
 func (s *IssueRepository) mutIssueInternal(ctx context.Context, issueId, childId, childType string, is_deleted bool) error {
 	session := s.RSess[0]
 	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	var err error
-	childName := childType + "s"
-	childIdName := childType + "_id"
+	// TODO
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		_, err = r.DB("issuedb").Table("issues").Get(issueId).Update(map[string]interface{}{
-			childName: r.Row.Field(childName).Filter(map[string]interface{}{
-				childIdName: childId,
-			}).Update(map[string]interface{}{
-				"is_deleted": is_deleted,
+		_, err = r.DB(ISSUEDB).Table(ISSUETABLE).Get(issueId).Update(map[string]interface{}{
+			childType: r.Row.Field(childType).Map(func(c r.Term) interface{} {
+				return r.Branch(c.Field("id").Eq(childId), c.Merge(map[string]bool{
+					"is_deleted": is_deleted,
+				}), c)
 			}),
 		}).RunWrite(session)
 		return err
@@ -333,7 +438,10 @@ func (s *IssueRepository) CreateData(ctx context.Context, data *pb.Data) (*pb.Da
 	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
 	err := runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		return r.DB("issuedb").Table("data").Insert(data).Exec(session)
+		if err := r.DB(ISSUEDB).Table(DATATABLE).Insert(data).Exec(session); err != nil {
+			return err
+		}
+		return s.mutDelData(ctx, *data.Id, false)
 	})
 	if err != nil {
 		return nil, err
@@ -353,8 +461,9 @@ func (s *IssueRepository) FetchData(ctx context.Context, dataId string) (*pb.Dat
 	var res *r.Cursor
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		res, err = r.DB("issuedb").Table("data").Filter(map[string]string{
-			"data_id": dataId,
+		res, err = r.DB(ISSUEDB).Table(DATATABLE).Filter(map[string]interface{}{
+			"id":         dataId,
+			"is_deleted": false,
 		}).Run(session)
 		return err
 	})
@@ -376,10 +485,11 @@ func (s *IssueRepository) FetchDataList(ctx context.Context, userId string) (dat
 	defer cancel()
 	var res *r.Cursor
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		res, err = r.DB("issuedb").Table("data").Filter(map[string]string{
-			"author": userId,
-		}).Run(session)
-		return err
+		res, err = r.DB(ISSUEDB).Table(DATATABLE).Filter(r.Row.Field("author").Eq(userId)).Run(session)
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -397,7 +507,7 @@ func (s *IssueRepository) PutData(ctx context.Context, dataId string, data *pb.D
 	defer cancel()
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		_, err = r.DB("issuedb").Table("data").Get(dataId).Update(
+		_, err = r.DB(ISSUEDB).Table(DATATABLE).Get(dataId).Update(
 			data,
 		).RunWrite(session)
 		return err
@@ -415,7 +525,7 @@ func (s *IssueRepository) mutDelData(ctx context.Context, dataId string, isDelet
 	defer cancel()
 	var err error
 	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
-		_, err = r.DB("issuedb").Table("data").Get(dataId).Update(map[string]interface{}{
+		_, err = r.DB(ISSUEDB).Table(DATATABLE).Get(dataId).Update(map[string]interface{}{
 			"is_deleted": isDeleted,
 		}).RunWrite(session)
 		return err
@@ -428,11 +538,27 @@ func (s *IssueRepository) mutDelData(ctx context.Context, dataId string, isDelet
 }
 
 func (s *IssueRepository) DeleteData(ctx context.Context, dataId string) error {
-	return s.mutDelIssue(ctx, dataId, true)
+	return s.mutDelData(ctx, dataId, true)
 }
 
 func (s *IssueRepository) UnDeleteData(ctx context.Context, dataId string) error {
-	return s.mutDelIssue(ctx, dataId, false)
+	return s.mutDelData(ctx, dataId, false)
+}
+
+func (s *IssueRepository) HardDeleteData(ctx context.Context, dataId string) error {
+	session := s.RSess[0]
+	ctxRet, cancel := context.WithTimeout(ctx, 6*time.Second)
+	defer cancel()
+	var err error
+	err = runutil.Retry(2*time.Second, ctxRet.Done(), func() error {
+		_, err = r.DB(ISSUEDB).Table(DATATABLE).Get(dataId).Delete().RunWrite(session)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	s.DeleteCache(dataId, &pb.User{})
+	return nil
 }
 
 // service
