@@ -2,12 +2,40 @@ package service
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	pb "github.com/ynishi/gdean/pb/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"net"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	pb "github.com/ynishi/gdean/pb/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+const bufSize = 1024 * 1024
+
+var lis *bufconn.Listener
+
+func init() {
+	lis = bufconn.Listen(bufSize)
+	s := grpc.NewServer()
+	repo := NewMockIssueRepository()
+	server := DefaultIssueServiceServerWithRepo(context.Background(), repo)
+	userServer := DefaultUserServiceServerWithRepo(context.Background(), repo)
+	pb.RegisterIssueServiceServer(s, server)
+	pb.RegisterUserServiceServer(s, userServer)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			panic(err)
+		}
+	}()
+}
+
+func bufDialer(ctx context.Context, address string) (net.Conn, error) {
+	return lis.Dial()
+}
 
 var testAddress = "localhost:28115"
 
@@ -598,4 +626,132 @@ func TestShouldUnDeleteData(t *testing.T) {
 
 	err = repo.HardDeleteData(ctx, id)
 	assert.Nil(t, err)
+}
+
+func TestIssueServiceCreateIssue(t *testing.T) {
+	ctx := context.Background()
+
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	assert.Nil(t, err)
+	defer conn.Close()
+
+	client := pb.NewIssueServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
+	userResp, err := userClient.CreateUser(ctx, &pb.CreateUserRequest{User: &pb.User{Name: "user1"}})
+	assert.Nil(t, err)
+	issue := pb.Issue{Title: "title1", Author: userResp.GetUser()}
+	resp, err := client.CreateIssue(ctx, &pb.CreateIssueRequest{UserId: *userResp.GetUser().Id, Issue: &pb.Issue{Title: "title1"}})
+	assert.Nil(t, err)
+	assert.Equal(t, issue.Title, resp.GetIssue().Title)
+	assert.Equal(t, issue.Desc, resp.GetIssue().Desc)
+	assert.Equal(t, issue.Author.Id, resp.GetIssue().Author.Id)
+	assert.Equal(t, issue.Author.Name, resp.GetIssue().Author.Name)
+}
+
+func TestIssueServiceGetIssue(t *testing.T) {
+	ctx := context.Background()
+
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	assert.Nil(t, err)
+	defer conn.Close()
+
+	client := pb.NewIssueServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
+	userResp, err := userClient.CreateUser(ctx, &pb.CreateUserRequest{User: &pb.User{Name: "user1"}})
+	assert.Nil(t, err)
+	issue := pb.Issue{Title: "title1", Author: userResp.GetUser()}
+	resp, err := client.CreateIssue(ctx, &pb.CreateIssueRequest{UserId: *userResp.GetUser().Id, Issue: &pb.Issue{Title: "title1"}})
+	assert.Nil(t, err)
+
+	got, err := client.GetIssue(ctx, &pb.GetIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+	assert.Equal(t, issue.Title, got.GetIssue().Title)
+	assert.Equal(t, issue.Desc, got.GetIssue().Desc)
+	assert.Equal(t, issue.Author.Id, got.GetIssue().Author.Id)
+	assert.Equal(t, issue.Author.Name, got.GetIssue().Author.Name)
+}
+
+func TestIssueServiceUpdateIssue(t *testing.T) {
+	ctx := context.Background()
+
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	assert.Nil(t, err)
+	defer conn.Close()
+
+	client := pb.NewIssueServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
+	userResp, err := userClient.CreateUser(ctx, &pb.CreateUserRequest{User: &pb.User{Name: "user1"}})
+	assert.Nil(t, err)
+	issue := pb.Issue{Title: "title1", Author: userResp.GetUser()}
+	resp, err := client.CreateIssue(ctx, &pb.CreateIssueRequest{UserId: *userResp.GetUser().Id, Issue: &pb.Issue{Title: "title1"}})
+	assert.Nil(t, err)
+
+	updateInput := resp.GetIssue()
+	updateInput.Title = "titleUpdated"
+	updateInput.Desc = "descUpdated"
+
+	fm := fieldmaskpb.FieldMask{Paths: []string{"Title"}}
+	updated, err := client.UpdateIssue(ctx, &pb.UpdateIssueRequest{Issue: updateInput, FieldMask: &fm})
+	assert.Nil(t, err)
+	assert.NotNil(t, updated)
+
+	got, err := client.GetIssue(ctx, &pb.GetIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+	assert.Equal(t, "titleUpdated", got.GetIssue().Title)
+	assert.Equal(t, "", got.GetIssue().Desc)
+	assert.Equal(t, issue.Author.Id, got.GetIssue().Author.Id)
+}
+
+func TestIssueServiceDeleteIssue(t *testing.T) {
+	ctx := context.Background()
+
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	assert.Nil(t, err)
+	defer conn.Close()
+
+	client := pb.NewIssueServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
+	userResp, err := userClient.CreateUser(ctx, &pb.CreateUserRequest{User: &pb.User{Name: "user1"}})
+	assert.Nil(t, err)
+	resp, err := client.CreateIssue(ctx, &pb.CreateIssueRequest{UserId: *userResp.GetUser().Id, Issue: &pb.Issue{Title: "title1"}})
+	assert.Nil(t, err)
+
+	deleted, err := client.DeleteIssue(ctx, &pb.DeleteIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+	assert.NotNil(t, deleted)
+
+	got, err := client.GetIssue(ctx, &pb.GetIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.NotNil(t, err)
+	assert.Nil(t, got)
+}
+
+func TestIssueServiceUnDeleteIssue(t *testing.T) {
+	ctx := context.Background()
+
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	assert.Nil(t, err)
+	defer conn.Close()
+
+	client := pb.NewIssueServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
+	userResp, err := userClient.CreateUser(ctx, &pb.CreateUserRequest{User: &pb.User{Name: "user1"}})
+	assert.Nil(t, err)
+	resp, err := client.CreateIssue(ctx, &pb.CreateIssueRequest{UserId: *userResp.GetUser().Id, Issue: &pb.Issue{Title: "title1"}})
+	assert.Nil(t, err)
+
+	_, err = client.DeleteIssue(ctx, &pb.DeleteIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+
+	deleted, _ := client.GetIssue(ctx, &pb.GetIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, deleted)
+
+	unDeleted, err := client.UnDeleteIssue(ctx, &pb.UnDeleteIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+	assert.NotNil(t, unDeleted)
+
+	got, err := client.GetIssue(ctx, &pb.GetIssueRequest{IssueId: *resp.GetIssue().Id})
+	assert.Nil(t, err)
+	assert.NotNil(t, got)
+	assert.Equal(t, *resp.GetIssue().Id, *got.GetIssue().Id)
+	assert.Equal(t, resp.GetIssue().Title, got.GetIssue().Title)
 }

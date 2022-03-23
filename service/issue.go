@@ -25,6 +25,43 @@ type IssueServiceServer struct {
 	Repo *IssueRepository
 }
 
+type UserServiceServer struct {
+	pb.UserServiceServer
+	// TODO: Separate from issue repository
+	Repo *IssueRepository
+}
+
+func DefaultUserServiceServerWithRepo(ctx context.Context, repo *IssueRepository) *UserServiceServer {
+	server := UserServiceServer{}
+	if err := repo.Init(); err != nil {
+		return nil
+	}
+	server.Repo = repo
+	return &server
+}
+
+func (s *UserServiceServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	id, err := NewId()
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	if in.UserId != nil {
+		id = *in.UserId
+	}
+	in.User.Id = &id
+	user, err := s.Repo.CreateUser(ctx, in.User)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.CreateUserResponse{
+		User: user,
+		Status: &gstatus.Status{
+			Code:    int32(code.Code_OK),
+			Message: "create user completed",
+		},
+	}, nil
+}
+
 func DefaultIssueServiceServerWithRepo(ctx context.Context, repo *IssueRepository) *IssueServiceServer {
 	server := IssueServiceServer{}
 	if err := repo.Init(); err != nil {
@@ -666,9 +703,6 @@ func (s *IssueServiceServer) DeleteIssue(ctx context.Context, in *pb.DeleteIssue
 }
 
 func (s *IssueServiceServer) UnDeleteIssue(ctx context.Context, in *pb.UnDeleteIssueRequest) (res *pb.UnDeleteIssueResponse, err error) {
-	if _, err = s.Repo.FetchIssue(ctx, in.IssueId); err != nil {
-		return nil, status.Error(codes.NotFound, err.Error())
-	}
 	err = s.Repo.UnDeleteIssue(ctx, in.IssueId)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
