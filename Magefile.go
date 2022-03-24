@@ -95,7 +95,20 @@ func Docker() error {
 
 // Runs temp server via go run, support appname APP={service name} mage RunS
 func RunS() error {
-	api := path.Join("cmd", os.Getenv("APP")+"api")
+	app := os.Getenv("APP")
+	if app == "gql" {
+		cur, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		defer os.Chdir(cur)
+		os.Chdir("gql")
+		if err := sh.Run("go", "run", "./server.go"); err != nil {
+			return err
+		}
+		return nil
+	}
+	api := path.Join("cmd", app+"api")
 	maingo := path.Join(api, "main.go")
 	wirego := path.Join(api, "wire_gen.go")
 	if err := sh.Run("go", "run", maingo, wirego); err != nil {

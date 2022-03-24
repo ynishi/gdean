@@ -12,62 +12,79 @@ type Analysis struct {
 }
 
 type Branch struct {
-	ID           string    `json:"id"`
-	IssueID      string    `json:"issueId"`
-	Title        string    `json:"title"`
-	CreatedAt    time.Time `json:"createdAt"`
-	LastModified time.Time `json:"lastModified"`
+	ID             string    `json:"id"`
+	IssueID        string    `json:"issueId"`
+	Title          string    `json:"title"`
+	CreatedAt      time.Time `json:"createdAt"`
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
 }
 
 type Comment struct {
-	ID           string    `json:"id"`
-	IssueID      string    `json:"issueId"`
-	AuthorID     string    `json:"authorId"`
-	Content      string    `json:"content"`
-	CreatedAt    time.Time `json:"createdAt"`
-	LastModified time.Time `json:"lastModified"`
+	ID             string    `json:"id"`
+	ParentID       string    `json:"parentID"`
+	AuthorID       string    `json:"authorId"`
+	Content        string    `json:"content"`
+	CreatedAt      time.Time `json:"createdAt"`
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
 }
 
 type Issue struct {
 	ID               string      `json:"id"`
 	Title            string      `json:"title"`
 	Desc             string      `json:"desc"`
-	AuthorName       string      `json:"authorName"`
+	Author           *User       `json:"author"`
 	ContributerNames []string    `json:"contributerNames"`
 	Comments         []*Comment  `json:"comments"`
 	Branches         []*Branch   `json:"branches"`
 	Analysis         []*Analysis `json:"analysis"`
-	CreatedAtIso     time.Time   `json:"createdAtISO"`
-	LastModifiedIso  string      `json:"lastModifiedISO"`
+	DecidedBranch    string      `json:"decidedBranch"`
+	CreatedAt        time.Time   `json:"createdAt"`
+	LastModifiedAt   time.Time   `json:"lastModifiedAt"`
+}
+
+type IssueInput struct {
+	Title    string   `json:"title"`
+	Desc     *string  `json:"desc"`
+	UserID   string   `json:"userId"`
+	Branches []string `json:"branches"`
 }
 
 type IssueSummary struct {
-	ID            string `json:"id"`
-	Title         string `json:"title"`
-	Desc          string `json:"desc"`
-	AuthorName    string `json:"authorName"`
-	MemberCount   int    `json:"memberCount"`
-	CommentCount  int    `json:"commentCount"`
-	BranchCount   int    `json:"branchCount"`
-	AnalysisCount int    `json:"analysisCount"`
-	CreatedAt     string `json:"createdAt"`
-	LastModified  string `json:"lastModified"`
+	ID                 string    `json:"id"`
+	Title              string    `json:"title"`
+	Desc               string    `json:"desc"`
+	AuthorName         string    `json:"authorName"`
+	ContributerCount   int       `json:"contributerCount"`
+	DecidedBranchTitle string    `json:"decidedBranchTitle"`
+	AnalysisCount      int       `json:"analysisCount"`
+	CreatedAt          time.Time `json:"createdAt"`
+	LastModifiedAt     time.Time `json:"lastModifiedAt"`
 }
 
-type NewComment struct {
+type NewAnalsysComment struct {
+	UserID     string `json:"userId"`
+	IssueID    string `json:"issueId"`
+	AnalysisID string `json:"analysisId"`
+	Content    string `json:"content"`
+}
+
+type NewIssueComment struct {
 	UserID  string `json:"userId"`
+	IssueID string `json:"issueId"`
 	Content string `json:"content"`
-}
-
-type NewIssue struct {
-	Title    string   `json:"title"`
-	Desc     *string  `json:"desc"`
-	Branches []string `json:"branches"`
-	UserID   string   `json:"userId"`
 }
 
 type PutComment struct {
 	ID      string `json:"id"`
 	UserID  string `json:"userId"`
 	Content string `json:"content"`
+}
+
+type User struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UserInput struct {
+	Name string `json:"name"`
 }

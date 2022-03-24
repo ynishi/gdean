@@ -16,3 +16,11 @@ func initializeIssueServerWithRepo(ctx context.Context) *s.IssueServiceServer {
 	)
 	return &s.IssueServiceServer{}
 }
+
+func initializeUserServerWithRepo(ctx context.Context) *s.UserServiceServer {
+	wire.Build(
+		s.DefaultIssueRepository,
+		s.DefaultUserServiceServerWithRepo,
+	)
+	return &s.UserServiceServer{}
+}

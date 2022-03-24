@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -32,6 +33,7 @@ func main() {
 	defer logger.Sync()
 	suger := logger.Sugar()
 
+	port := os.Getenv("APP_MET_PORT")
 	c, err := s.InitConfig()
 	if err != nil {
 		suger.Fatalw("failed to setup config", "err", err)
@@ -44,6 +46,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	asvs := initializeIssueServerWithRepo(ctx)
+	usvs := initializeUserServerWithRepo(ctx)
 	opts := []grpc_recovery.Option{
 		grpc_recovery.WithRecoveryHandler(func(p interface{}) error {
 			return status.Errorf(codes.Unknown, "panic triggered: %v", p)
@@ -59,6 +62,7 @@ func main() {
 		),
 	)
 	pb.RegisterIssueServiceServer(server, asvs)
+	pb.RegisterUserServiceServer(server, usvs)
 	grpc_prometheus.Register(server)
 
 	http.Handle("/metrics", promhttp.Handler())
@@ -71,8 +75,8 @@ func main() {
 	}()
 	wg.Add(2)
 	go func() {
-		suger.Infow("metrics started", "port", 8080)
-		http.ListenAndServe(":8080", nil)
+		suger.Infow("metrics started", "port", port)
+		http.ListenAndServe(":"+port, nil)
 	}()
 	wg.Wait()
 }
