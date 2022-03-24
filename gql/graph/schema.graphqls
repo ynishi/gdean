@@ -4,17 +4,23 @@
 
 scalar Time
 
+type User {
+  id: ID!
+  name: String!
+}
+
 type Issue {
   id: ID!
   title: String!
   desc: String!
-  authorName: String!
+  author: User!
   contributerNames: [String!]!
   comments: [Comment!]!
   branches: [Branch!]!
   analysis: [Analysis!]!
-  createdAtISO: Time!
-  lastModifiedISO: String!
+  decidedBranch: ID!
+  createdAt: Time!
+  lastModifiedAt: Time!
 }
 
 type IssueSummary {
@@ -22,21 +28,20 @@ type IssueSummary {
   title: String!
   desc: String!
   authorName: String!
-  memberCount: Int!
-  commentCount: Int!
-  branchCount: Int!
+  contributerCount: Int!
+  decidedBranchTitle: String!
   analysisCount: Int!
-  createdAt: String!
-  lastModified: String!
+  createdAt: Time!
+  lastModifiedAt: Time!
 }
 
 type Comment {
   id: ID!
-  issueId: ID!
+  parentID: ID!
   authorId: ID!
   content: String!
   createdAt: Time!
-  lastModified: Time!
+  lastModifiedAt: Time!
 }
 
 type Branch {
@@ -44,7 +49,7 @@ type Branch {
   issueId: ID!
   title: String!
   createdAt: Time!
-  lastModified: Time!
+  lastModifiedAt: Time!
 }
 
 type Analysis {
@@ -53,21 +58,28 @@ type Analysis {
 }
 
 type Query {
-  issues: [IssueSummary!]!
+  issues(userId: ID!): [IssueSummary!]!
   issue(id: ID!): Issue!
-  comments(issueId: ID!): [Comment!]!
-  branches(issueID: ID!): [Branch!]!
+  user(userId: ID!): User!
 }
 
-input NewIssue {
+input IssueInput {
   title: String!
   desc: String
+  userId: ID!
   branches: [String!]
-  userId: String!
 }
 
-input NewComment {
-  userId: String!
+input NewIssueComment {
+  userId: ID!
+  issueId: ID!
+  content: String!
+}
+
+input NewAnalsysComment {
+  userId: ID!
+  issueId: ID!
+  analysisId: ID!
   content: String!
 }
 
@@ -77,8 +89,14 @@ input PutComment {
   content: String!
 }
 
+input UserInput {
+  name: String!
+}
+
 type Mutation {
-  createIssue(input: NewIssue!): Issue!
-  createComment(input: NewComment): Comment!
-  updateComment(input: PutComment): Comment!
+  createIssue(user_id: ID!, input: IssueInput!): Issue!
+  updateIssue(issue_id: ID!, input: IssueInput!): Issue!
+  createIssueComment(input: NewIssueComment): Comment!
+  createUser(input: UserInput!): User!
+  updateUser(user_id: ID!, input: UserInput!): User!
 }

@@ -18,3 +18,9 @@ func initializeIssueServerWithRepo(ctx context.Context) *service.IssueServiceSer
 	issueServiceServer := service.DefaultIssueServiceServerWithRepo(ctx, issueRepository)
 	return issueServiceServer
 }
+
+func initializeUserServerWithRepo(ctx context.Context) *service.UserServiceServer {
+	issueRepository := service.DefaultIssueRepository()
+	userServiceServer := service.DefaultUserServiceServerWithRepo(ctx, issueRepository)
+	return userServiceServer
+}
