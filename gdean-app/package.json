@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@nuxtjs/apollo": "^4.0.1-rc.5",
+    "@nuxtjs/vuetify": "^1.12.3",
     "core-js": "^3.19.3",
     "graphql-tag": "^2.12.6",
     "nuxt": "^2.15.8",
