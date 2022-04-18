@@ -108,6 +108,18 @@ func RunS() error {
 		}
 		return nil
 	}
+	if app == "nuxt" {
+		cur, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		defer os.Chdir(cur)
+		os.Chdir("gdean-app")
+		if err := sh.Run("yarn", "dev"); err != nil {
+			return err
+		}
+		return nil
+	}
 	api := path.Join("cmd", app+"api")
 	maingo := path.Join(api, "main.go")
 	wirego := path.Join(api, "wire_gen.go")

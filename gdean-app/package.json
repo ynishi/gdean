@@ -1,0 +1,58 @@
+{
+  "name": "gdean-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev17": " NODE_OPTIONS=--openssl-legacy-provider nuxt",
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint:js": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
+    "lint:style": "stylelint \"**/*.{css,scss,sass,html,vue}\" --ignore-path .gitignore",
+    "lint:prettier": "prettier --check .",
+    "lint": "yarn lint:js && yarn lint:style && yarn lint:prettier",
+    "lintfix": "prettier --write --list-different . && yarn lint:js --fix && yarn lint:style --fix"
+  },
+  "dependencies": {
+    "@nuxtjs/apollo": "^4.0.1-rc.5",
+    "@nuxtjs/vuetify": "^1.12.3",
+    "core-js": "^3.19.3",
+    "graphql-tag": "^2.12.6",
+    "nuxt": "^2.15.8",
+    "nuxt-class-component": "^1.3.0",
+    "nuxt-property-decorator": "^2.9.1",
+    "pug": "^3.0.2",
+    "pug-loader": "^2.4.0",
+    "pug-plain-loader": "^1.1.0",
+    "vue": "^2.6.14",
+    "vue-server-renderer": "^2.6.14",
+    "vue-template-compiler": "^2.6.14",
+    "vuex-module-decorators": "^2.0.0",
+    "webpack": "^4.46.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.16.3",
+    "@nuxt/types": "^2.15.8",
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/eslint-config-typescript": "^9.0.0",
+    "@nuxtjs/eslint-module": "^3.0.2",
+    "@nuxtjs/stylelint-module": "^4.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-nuxt": "^3.1.0",
+    "eslint-plugin-vue": "^8.2.0",
+    "postcss-html": "^1.3.0",
+    "prettier": "^2.5.1",
+    "stylelint": "^14.1.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recommended-vue": "^1.1.0",
+    "stylelint-config-standard": "^24.0.0"
+  },
+  "volta": {
+    "node": "16.14.2",
+    "yarn": "1.22.18"
+  }
+}
